@@ -255,9 +255,9 @@ const BrowseSkills = () => {
                   )}
                 </div>
                 <span className="font-medium text-sm">{category.name}</span>
-                <span className="ml-auto text-xs font-bold bg-gray-100 px-2 py-0.5 border border-black">
+                {/* <span className="ml-auto text-xs font-bold bg-gray-100 px-2 py-0.5 border border-black">
                   {category.skillCount || 0}
-                </span>
+                </span> */}
               </label>
             ))}
           </div>
@@ -441,10 +441,10 @@ const BrowseSkills = () => {
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gray-200 border-2 border-black rounded-full overflow-hidden">
-                            {skill.offeredBy?.avatar ? (
+                            {skill.offeredBy?.avatar.url ? (
                               <img
-                                src={skill.offeredBy.avatar}
-                                alt={skill.offeredBy.name}
+                                src={skill.offeredBy.avatar.url}
+                                // alt={skill.offeredBy.name}
                                 className="w-full h-full object-cover"
                               />
                             ) : (

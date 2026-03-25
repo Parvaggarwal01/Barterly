@@ -19,7 +19,7 @@ const Profile = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // Edit Form State
   const [editForm, setEditForm] = useState({
     name: "",
@@ -43,11 +43,11 @@ const Profile = () => {
     try {
       setLoading(true);
       const currentUser = authService.getUser();
-      
+
       if (!currentUser || !currentUser._id) {
         throw new Error("No logged in user found");
       }
-      
+
       const [profileRes, skillsRes, reviewsRes] = await Promise.all([
         userService.getCurrentUserProfile(),
         userService.getUserSkills(currentUser._id, { limit: 4 }),
@@ -57,10 +57,10 @@ const Profile = () => {
       const fetchedUser = profileRes.data?.data?.user || currentUser;
       setUser(fetchedUser);
       setSkills(skillsRes.data?.data?.skills || []);
-      
+
       const fetchedReviews = reviewsRes.data?.data?.reviews || [];
       setReviews(fetchedReviews);
-      
+
       // Calculate rating stats
       if (fetchedReviews.length > 0) {
         const stats = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, total: fetchedReviews.length, average: fetchedUser.averageRating || 0 };
@@ -84,7 +84,7 @@ const Profile = () => {
   };
 
   const handleEditClick = () => setIsEditing(true);
-  
+
   const handleEditClose = () => {
     setIsEditing(false);
     setEditForm({
@@ -118,7 +118,7 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      
+
       // Upload avatar if changed
       if (avatarFile && avatarPreview) {
          await userService.uploadAvatar(avatarPreview);
@@ -126,11 +126,11 @@ const Profile = () => {
 
       // Update profile
       const updatedUserRes = await userService.updateProfile(editForm);
-      
+
       // Update local state and local storage
       const updatedUser = updatedUserRes.data?.data?.user || updatedUserRes.data?.user || updatedUserRes.data;
       setUser(prev => ({ ...prev, ...updatedUser }));
-      
+
       // Sync authService cache
       const currentStored = authService.getCurrentUser();
       localStorage.setItem("user", JSON.stringify({ ...currentStored, ...updatedUser }));
@@ -211,7 +211,7 @@ const Profile = () => {
                       </div>
                     )}
                   </div>
-                  <button 
+                  <button
                     onClick={handleEditClick}
                     className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-primary border-2 border-black px-2 py-1 text-[10px] font-bold uppercase whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:scale-105 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-transform"
                   >
@@ -235,11 +235,11 @@ const Profile = () => {
                   <p className="text-sm font-medium text-gray-600 mb-4 max-w-[80%] mx-auto md:mx-0">
                      {user?.bio || "No bio added yet."}
                   </p>
-                  
+
                   <div className="flex flex-wrap justify-center md:justify-start gap-4">
                     {user?.location && (
                       <span className="border-2 border-black bg-transparent px-3 py-1 text-xs font-bold uppercase flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">location_on</span> 
+                        <span className="material-symbols-outlined text-sm">location_on</span>
                         {user.location}
                       </span>
                     )}
@@ -251,7 +251,7 @@ const Profile = () => {
 
                 {/* Stats & Actions */}
                 <div className="flex flex-col gap-4 shrink-0 sm:min-w-[200px] w-full md:w-auto mt-4 md:mt-0">
-                  <button 
+                  <button
                     onClick={handleEditClick}
                     className="w-full bg-primary hover:bg-[#e6c300] border-2 border-black py-3 px-6 text-sm font-bold uppercase hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex items-center justify-center gap-2 transition-all"
                   >
@@ -287,7 +287,7 @@ const Profile = () => {
                     <h2 className="text-2xl font-extrabold uppercase tracking-tight">My Skills ({skills.length})</h2>
                     <Link to="/my-skills" className="text-xs font-bold underline hover:text-[#e6c300] uppercase">Manage All</Link>
                   </div>
-                  
+
                   {skills.length === 0 ? (
                      <div className="bg-neutral-100 border-2 border-dashed border-black p-8 text-center text-gray-500">
                         <span className="material-symbols-outlined text-4xl mb-2 flex justify-center">lightbulb</span>
@@ -313,7 +313,7 @@ const Profile = () => {
                           <p className="text-xs text-gray-500 font-bold mt-2 capitalize">{skill.level} • {skill.trades || 0} Trades</p>
                         </div>
                       ))}
-                      
+
                       {/* Add Skill Button Box */}
                       {skills.length < 4 && (
                         <Link to="/post-skill" className="bg-neutral-100 border-2 border-dashed border-black p-4 flex flex-col items-center justify-center gap-2 hover:bg-white hover:border-solid hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all h-full min-h-[100px] group">
@@ -324,14 +324,14 @@ const Profile = () => {
                     </div>
                   )}
                 </section>
-                
+
               </div>
 
               {/* Right Column (Reviews) */}
               <div className="lg:w-[40%] flex flex-col gap-8">
                 <section className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                    <h2 className="text-xl font-extrabold uppercase tracking-tight mb-4">Reviews & Ratings</h2>
-                   
+
                    <div className="flex items-center gap-4 mb-6">
                      <div className="text-6xl font-black text-primary tracking-tighter" style={{ WebkitTextStroke: "2px black" }}>
                         {ratingStats.average > 0 ? Number(ratingStats.average).toFixed(1) : "0.0"}
@@ -379,7 +379,7 @@ const Profile = () => {
                                   </div>
                                </div>
                             </div>
-                            <p className="text-sm font-medium line-clamp-3">"{review.feedback}"</p>
+                            <p className="text-sm font-medium line-clamp-3">"{review.comment}"</p>
                          </div>
                       ))
                    )}
@@ -403,14 +403,14 @@ const Profile = () => {
             <div className="bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] w-full max-w-lg relative flex flex-col max-h-[90vh]">
                <div className="bg-primary border-b-4 border-black p-4 flex justify-between items-center shrink-0">
                   <h2 className="text-2xl font-extrabold uppercase">Edit Profile</h2>
-                  <button 
+                  <button
                      onClick={handleEditClose}
                      className="w-8 h-8 flex items-center justify-center border-2 border-black bg-white hover:bg-accent-red hover:text-white transition-colors"
                   >
                      <span className="material-symbols-outlined text-xl">close</span>
                   </button>
                </div>
-               
+
                <div className="p-6 flex flex-col gap-6 overflow-y-auto">
                   <div className="flex items-center gap-4">
                      <div className="w-20 h-20 border-2 border-black bg-neutral-200 overflow-hidden shrink-0">
@@ -424,8 +424,8 @@ const Profile = () => {
                      </div>
                      <div className="flex-1">
                         <label className="block text-xs font-bold uppercase mb-2">Profile Photo (Max 2MB)</label>
-                        <input 
-                           type="file" 
+                        <input
+                           type="file"
                            accept="image/*"
                            onChange={handleImageChange}
                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:text-xs file:font-bold file:uppercase file:bg-primary file:text-black hover:file:bg-[#e6c300] file:cursor-pointer file:transition-colors cursor-pointer"
@@ -435,37 +435,37 @@ const Profile = () => {
 
                   <div>
                      <label className="block text-xs font-bold uppercase mb-1">Full Name *</label>
-                     <input 
-                        type="text" 
+                     <input
+                        type="text"
                         name="name"
                         value={editForm.name}
                         onChange={handleInputChange}
-                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow" 
+                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                      />
                   </div>
 
                   <div>
                      <label className="block text-xs font-bold uppercase mb-1">Bio (Max 500 chars)</label>
-                     <textarea 
+                     <textarea
                         name="bio"
                         value={editForm.bio}
                         onChange={handleInputChange}
                         rows="4"
-                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow resize-none" 
+                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow resize-none"
                      />
                   </div>
 
                   <div>
                      <label className="block text-xs font-bold uppercase mb-1">Location</label>
-                     <input 
-                        type="text" 
+                     <input
+                        type="text"
                         name="location"
                         value={editForm.location}
                         onChange={handleInputChange}
-                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow" 
+                        className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-bold focus:outline-none focus:ring-0 focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                      />
                   </div>
-                  
+
                   {/* Note: Managing skillsWanted and portfolioLinks can be added later as complex array editors */}
                   <div className="pt-2 text-xs font-bold text-gray-400 uppercase">
                      Manage links and desired skills coming soon.
@@ -473,14 +473,14 @@ const Profile = () => {
                </div>
 
                <div className="p-6 border-t-4 border-black bg-neutral-50 flex justify-end gap-4 shrink-0">
-                  <button 
+                  <button
                      onClick={handleEditClose}
                      disabled={saving}
                      className="px-6 py-2 border-2 border-black font-bold uppercase hover:bg-neutral-200 transition-colors disabled:opacity-50"
                   >
                      Cancel
                   </button>
-                  <button 
+                  <button
                      onClick={handleSave}
                      disabled={saving}
                      className="px-6 py-2 bg-primary border-2 border-black font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none hover:bg-[#e6c300] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait"

@@ -101,6 +101,8 @@ const skillService = {
    */
   getAllSkillsAdmin: async (params = {}) => {
     const response = await api.get("/skills/admin/all", { params });
+    console.log(response);
+    
     return response.data;
   },
 

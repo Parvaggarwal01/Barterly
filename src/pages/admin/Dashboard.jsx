@@ -1,510 +1,350 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import authService from "../../services/authService";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Sidebar from "../../components/layout/Sidebar";
+import DashboardHeader from "../../components/layout/DashboardHeader";
+import adminService from "../../services/adminService";
+import skillService from "../../services/skillService";
+import reportService from "../../services/reportService";
+import userService from "../../services/userService";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const user = authService.getUser();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalSkills: 0,
+    activeRequests: 0,
+    completedTrades: 0,
+  });
+  const [pendingSkills, setPendingSkills] = useState([]);
+  const [recentReports, setRecentReports] = useState([]);
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Handle logout
-  const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
-  };
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [statsRes, skillsRes, reportsRes, usersRes] = await Promise.all([
+          adminService.getDashboardStats(),
+          skillService.getAllSkillsAdmin({
+            verificationStatus: "pending",
+            limit: 5,
+          }),
+          reportService.getAllReports({ limit: 5 }),
+          userService.getAllUsers({ limit: 5 }),
+        ]);
 
-  // Placeholder data
-  const stats = {
-    totalUsers: 1247,
-    totalSkills: 3856,
-    activeRequests: 142,
-    completedTrades: 2891,
-  };
+        setStats(statsRes.data || statsRes);
+        setPendingSkills(skillsRes.data.skills || []);
+        setRecentReports(reportsRes.data.reports || []);
+        setRecentUsers(usersRes.data.data.users || []);
+      } catch (error) {
+        console.error("Failed to fetch admin dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const recentUsers = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      email: "sarah.j@email.com",
-      date: "2024-02-25",
-      status: "active",
-      avatar:
-        "https://ui-avatars.com/api/?name=Sarah+Johnson&background=ffde5c&color=181710&bold=true",
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      email: "mike.chen@email.com",
-      date: "2024-02-24",
-      status: "pending",
-      avatar:
-        "https://ui-avatars.com/api/?name=Mike+Chen&background=a3e635&color=181710&bold=true",
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      email: "emma.d@email.com",
-      date: "2024-02-23",
-      status: "active",
-      avatar:
-        "https://ui-avatars.com/api/?name=Emma+Davis&background=f472b6&color=181710&bold=true",
-    },
-  ];
-
-  const pendingSkills = [
-    {
-      id: 1,
-      name: "Adobe Photoshop Expert",
-      category: "Design",
-      user: "John Doe",
-      status: "pending",
-    },
-    {
-      id: 2,
-      name: "React Native Development",
-      category: "Technology",
-      user: "Jane Smith",
-      status: "pending",
-    },
-    {
-      id: 3,
-      name: "Spanish Tutoring",
-      category: "Languages",
-      user: "Carlos Rodriguez",
-      status: "pending",
-    },
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "bg-secondary";
-      case "pending":
-        return "bg-primary";
-      case "suspended":
-        return "bg-tertiary";
-      default:
-        return "bg-neutral";
-    }
-  };
+    fetchDashboardData();
+  }, []);
 
   return (
-    <div
-      className="min-h-screen bg-background-light"
-      style={{ fontFamily: "Space Grotesk, sans-serif" }}
-    >
-      {/* Header */}
-      <header className="h-20 border-b-2 border-black bg-white flex items-center justify-between px-6 sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-            className="md:hidden p-2 border-2 border-black bg-white hover:bg-primary transition-colors"
-          >
-            <span className="material-symbols-outlined">
-              {showMobileSidebar ? "close" : "menu"}
-            </span>
-          </button>
+    <div className="font-display bg-[#FFFBF0] h-screen flex flex-col">
+      {/* Sidebar */}
+      <DashboardHeader
+        onMenuClick={() => setShowMobileSidebar(!showMobileSidebar)}
+        title="ADMIN DASHBOARD"
+      />
 
-          <div className="w-10 h-10 bg-primary border-2 border-black"></div>
-          <h1 className="text-xl font-black uppercase">BARTERLY ADMIN</h1>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Search */}
-          <div className="hidden md:flex items-center">
-            <input
-              type="text"
-              placeholder="SEARCH USERS, SKILLS..."
-              className="w-80 px-4 py-2 border-2 border-black font-bold uppercase text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-
-          {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-2 border-2 border-black bg-white hover:bg-primary transition-colors"
-            >
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-tertiary border-2 border-black rounded-full text-xs font-black flex items-center justify-center">
-                3
-              </span>
-            </button>
-
-            {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border-2 border-black shadow-hard">
-                <div className="p-4 border-b-2 border-black">
-                  <h3 className="font-black uppercase">NOTIFICATIONS</h3>
-                </div>
-                <div className="max-h-64 overflow-y-auto">
-                  <div className="p-4 border-b border-neutral-border hover:bg-background-light">
-                    <p className="font-bold text-sm">New user registration</p>
-                    <p className="text-xs text-neutral mt-1">5 minutes ago</p>
-                  </div>
-                  <div className="p-4 border-b border-neutral-border hover:bg-background-light">
-                    <p className="font-bold text-sm">Skill pending approval</p>
-                    <p className="text-xs text-neutral mt-1">15 minutes ago</p>
-                  </div>
-                  <div className="p-4 hover:bg-background-light">
-                    <p className="font-bold text-sm">Report submitted</p>
-                    <p className="text-xs text-neutral mt-1">1 hour ago</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* User Profile */}
-          <div className="flex items-center gap-2">
-            <img
-              src={
-                user?.avatar?.url ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "Admin")}&background=ffde5c&color=181710&bold=true`
-              }
-              alt={user?.name}
-              className="w-10 h-10 border-2 border-black object-cover"
-            />
-            <span className="hidden md:block font-bold">{user?.name}</span>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex">
-        {/* Mobile Overlay */}
-        {showMobileSidebar && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-            onClick={() => setShowMobileSidebar(false)}
-          ></div>
-        )}
-
-        {/* Sidebar */}
-        <aside
-          className={`
-          w-60 bg-white border-r-2 border-black flex flex-col min-h-screen z-40
-          fixed md:sticky md:top-20 inset-y-0 left-0 top-20
-          transform transition-transform duration-300 ease-in-out
-          ${showMobileSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        `}
-        >
-          {/* Mini Profile */}
-          <div className="p-6 border-b-2 border-black">
-            <div className="flex flex-col items-center">
-              <img
-                src={
-                  user?.avatar?.url ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "Admin")}&background=f472b6&color=181710&bold=true`
-                }
-                alt={user?.name}
-                className="w-20 h-20 border-2 border-black object-cover mb-3"
-              />
-              <h3 className="font-black text-lg uppercase text-center">
-                {user?.name}
-              </h3>
-              <span className="px-3 py-1 bg-tertiary border-2 border-black text-xs font-black uppercase mt-2">
-                ADMIN
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <Link
-              to="/admin/dashboard"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-primary font-black uppercase text-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-transform"
-            >
-              <span className="material-symbols-outlined text-xl">
-                dashboard
-              </span>
-              Overview
-            </Link>
-
-            <Link
-              to="/admin/users"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">group</span>
-              Users
-              <span className="ml-auto px-2 py-0.5 bg-primary border border-black text-xs font-black">
-                12
-              </span>
-            </Link>
-
-            <Link
-              to="/admin/skills"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">
-                verified
-              </span>
-              Skills
-              <span className="ml-auto px-2 py-0.5 bg-tertiary border border-black text-xs font-black">
-                5
-              </span>
-            </Link>
-
-            <Link
-              to="/admin/categories"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">
-                category
-              </span>
-              Categories
-            </Link>
-
-            <Link
-              to="/admin/barters"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">
-                swap_horiz
-              </span>
-              Barters
-            </Link>
-
-            <Link
-              to="/admin/reports"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">flag</span>
-              Reports
-              <span className="ml-auto px-2 py-0.5 bg-tertiary border border-black text-xs font-black">
-                3
-              </span>
-            </Link>
-
-            <Link
-              to="/admin/settings"
-              onClick={() => setShowMobileSidebar(false)}
-              className="flex items-center gap-3 px-4 py-3 mb-2 border-2 border-black bg-white font-bold uppercase text-sm hover:bg-neutral-surface hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">
-                settings
-              </span>
-              Settings
-            </Link>
-          </nav>
-
-          {/* Logout Button */}
-          <div className="p-4 border-t-2 border-black">
-            <button
-              onClick={() => {
-                setShowMobileSidebar(false);
-                handleLogout();
-              }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-black bg-white font-black uppercase text-sm hover:bg-tertiary hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              <span className="material-symbols-outlined text-xl">logout</span>
-              Logout
-            </button>
-          </div>
-        </aside>
+      <div className="flex-1 flex flex-row overflow-hidden">
+        {/* Header */}
+        <Sidebar
+          isOpen={showMobileSidebar}
+          onClose={() => setShowMobileSidebar(false)}
+        />
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white border-2 border-black p-6 shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="material-symbols-outlined text-3xl">
-                  group
-                </span>
-                <span className="px-2 py-1 bg-secondary border border-black text-xs font-black uppercase">
-                  Total
-                </span>
-              </div>
-              <h3 className="text-3xl font-black mb-1">{stats.totalUsers}</h3>
-              <p className="text-sm font-bold uppercase text-neutral">
-                Total Users
-              </p>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FFFBF0] p-6">
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
             </div>
+          ) : (
+            <div className="container mx-auto">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                {/* Total Users */}
+                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl">
+                      group
+                    </span>
+                    <span className="px-2 py-1 bg-[#A8E6CF] border border-black text-xs font-black uppercase">
+                      Total
+                    </span>
+                  </div>
+                  <h3 className="text-3xl font-black mb-1">
+                    {stats.totalUsers}
+                  </h3>
+                  <p className="text-sm font-bold uppercase text-gray-500">
+                    Total Users
+                  </p>
+                </div>
 
-            <div className="bg-white border-2 border-black p-6 shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="material-symbols-outlined text-3xl">
-                  verified
-                </span>
-                <span className="px-2 py-1 bg-primary border border-black text-xs font-black uppercase">
-                  Total
-                </span>
-              </div>
-              <h3 className="text-3xl font-black mb-1">{stats.totalSkills}</h3>
-              <p className="text-sm font-bold uppercase text-neutral">
-                Total Skills
-              </p>
-            </div>
+                {/* Total Skills */}
+                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl">
+                      verified
+                    </span>
+                    <span className="px-2 py-1 bg-[#FF8B94] border border-black text-xs font-black uppercase">
+                      Total
+                    </span>
+                  </div>
+                  <h3 className="text-3xl font-black mb-1">
+                    {stats.totalSkills}
+                  </h3>
+                  <p className="text-sm font-bold uppercase text-gray-500">
+                    Total Skills
+                  </p>
+                </div>
 
-            <div className="bg-white border-2 border-black p-6 shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="material-symbols-outlined text-3xl">
-                  pending_actions
-                </span>
-                <span className="px-2 py-1 bg-tertiary border border-black text-xs font-black uppercase">
-                  Active
-                </span>
-              </div>
-              <h3 className="text-3xl font-black mb-1">
-                {stats.activeRequests}
-              </h3>
-              <p className="text-sm font-bold uppercase text-neutral">
-                Active Requests
-              </p>
-            </div>
+                {/* Active Requests */}
+                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl">
+                      pending_actions
+                    </span>
+                    <span className="px-2 py-1 bg-[#FFD3B6] border border-black text-xs font-black uppercase">
+                      Active
+                    </span>
+                  </div>
+                  <h3 className="text-3xl font-black mb-1">
+                    {stats.activeRequests}
+                  </h3>
+                  <p className="text-sm font-bold uppercase text-gray-500">
+                    Active Requests
+                  </p>
+                </div>
 
-            <div className="bg-white border-2 border-black p-6 shadow-hard hover:shadow-hard-lg hover:-translate-y-1 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="material-symbols-outlined text-3xl">
-                  check_circle
-                </span>
-                <span className="px-2 py-1 bg-secondary border border-black text-xs font-black uppercase">
-                  Total
-                </span>
+                {/* Completed Trades */}
+                <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="material-symbols-outlined text-3xl">
+                      check_circle
+                    </span>
+                    <span className="px-2 py-1 bg-[#DCEDC1] border border-black text-xs font-black uppercase">
+                      Total
+                    </span>
+                  </div>
+                  <h3 className="text-3xl font-black mb-1">
+                    {stats.completedTrades}
+                  </h3>
+                  <p className="text-sm font-bold uppercase text-gray-500">
+                    Completed Trades
+                  </p>
+                </div>
               </div>
-              <h3 className="text-3xl font-black mb-1">
-                {stats.completedTrades}
-              </h3>
-              <p className="text-sm font-bold uppercase text-neutral">
-                Completed Trades
-              </p>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Users */}
-            <div className="bg-white border-2 border-black shadow-hard">
-              <div className="p-6 border-b-2 border-black flex justify-between items-center">
-                <h2 className="text-xl font-black uppercase">Recent Users</h2>
-                <Link
-                  to="/admin/users"
-                  className="text-sm font-bold uppercase hover:underline"
-                >
-                  View All →
-                </Link>
-              </div>
-              <div className="p-6">
-                <div className="space-y-4">
-                  {recentUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-4 border-2 border-black bg-neutral-surface"
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent Reports */}
+                <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="p-6 border-b-2 border-black flex justify-between items-center bg-gray-50">
+                    <h2 className="text-xl font-black uppercase">
+                      Recent Reports
+                    </h2>
+                    <Link
+                      to="/admin/reports"
+                      className="text-sm font-bold uppercase hover:underline"
                     >
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-12 h-12 border-2 border-black object-cover"
-                        />
-                        <div>
-                          <h3 className="font-black text-sm">{user.name}</h3>
-                          <p className="text-xs text-neutral">{user.email}</p>
-                          <p className="text-xs text-neutral mt-1">
-                            Joined: {new Date(user.date).toLocaleDateString()}
-                          </p>
-                        </div>
+                      View All →
+                    </Link>
+                  </div>
+                  <div className="p-6">
+                    {recentReports.length === 0 ? (
+                      <p className="text-center text-gray-500">
+                        No reports found.
+                      </p>
+                    ) : (
+                      <div className="space-y-4">
+                        {recentReports.map((report) => (
+                          <div
+                            key={report._id}
+                            className="flex items-center justify-between p-4 border-2 border-black bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gray-200 rounded-full border-2 border-black flex items-center justify-center font-bold">
+                                {report.reporter?.name?.charAt(0) || "?"}
+                              </div>
+                              <div>
+                                <h3 className="font-black text-sm">
+                                  {report.reason.replace("_", " ")}
+                                </h3>
+                                <p className="text-xs text-gray-500">
+                                  Against: {report.reportedUser?.name}
+                                </p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  {new Date(
+                                    report.createdAt,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <span
+                              className={`px-2 py-1 border-2 border-black text-xs font-black uppercase ${
+                                report.status === "pending"
+                                  ? "bg-[#FFD3B6]"
+                                  : "bg-[#DCEDC1]"
+                              }`}
+                            >
+                              {report.status}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      <span
-                        className={`px-3 py-1 ${getStatusColor(
-                          user.status,
-                        )} border-2 border-black text-xs font-black uppercase`}
-                      >
-                        {user.status}
-                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pending Skills */}
+                <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="p-6 border-b-2 border-black flex justify-between items-center bg-gray-50">
+                    <h2 className="text-xl font-black uppercase">
+                      Pending Skills
+                    </h2>
+                    <Link
+                      to="/admin/skills"
+                      className="text-sm font-bold uppercase hover:underline"
+                    >
+                      View All →
+                    </Link>
+                  </div>
+                  <div className="p-6">
+                    {pendingSkills.length === 0 ? (
+                      <p className="text-center text-gray-500">
+                        No pending skills.
+                      </p>
+                    ) : (
+                      <div className="space-y-4">
+                        {pendingSkills.map((skill) => (
+                          <div
+                            key={skill._id}
+                            className="p-4 border-2 border-black bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h3 className="font-black text-sm">
+                                  {skill.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Category: {skill.category?.name}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  By: {skill.offeredBy?.name}
+                                </p>
+                              </div>
+                              <span className="px-2 py-1 bg-[#FFD3B6] border-2 border-black text-xs font-black uppercase">
+                                Pending
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Link
+                                to={`/skills/${skill._id}`}
+                                className="flex-1 text-center px-4 py-2 bg-[#A8E6CF] border-2 border-black font-bold uppercase text-xs hover:translate-x-[1px] hover:translate-y-[1px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all"
+                              >
+                                View Details
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Users Row */}
+              <div className="mt-6 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-6 border-b-2 border-black flex justify-between items-center bg-gray-50">
+                  <h2 className="text-xl font-black uppercase">Recent Users</h2>
+                  <Link
+                    to="/admin/users"
+                    className="text-sm font-bold uppercase hover:underline"
+                  >
+                    View All →
+                  </Link>
+                </div>
+                <div className="p-6">
+                  {recentUsers.length === 0 ? (
+                    <p className="text-center text-gray-500">
+                      No recent users.
+                    </p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b-2 border-black">
+                            <th className="text-left py-2 font-black uppercase">
+                              User
+                            </th>
+                            <th className="text-left py-2 font-black uppercase">
+                              Email
+                            </th>
+                            <th className="text-left py-2 font-black uppercase">
+                              Status
+                            </th>
+                            <th className="text-left py-2 font-black uppercase">
+                              Joined
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {recentUsers.map((user) => (
+                            <tr
+                              key={user._id}
+                              className="border-b border-gray-200"
+                            >
+                              <td className="py-3 flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden border border-black flex items-center justify-center font-bold">
+                                  {user.avatar?.url ? (
+                                    <img
+                                      src={user.avatar.url}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <span>{user.name?.charAt(0)}</span>
+                                  )}
+                                </div>
+                                <span className="font-bold text-sm">
+                                  {user.name}
+                                </span>
+                              </td>
+                              <td className="py-3 text-sm">{user.email}</td>
+                              <td className="py-3">
+                                <span
+                                  className={`px-2 py-1 text-[10px] font-black uppercase border border-black ${
+                                    user.isActive
+                                      ? "bg-[#DCEDC1]"
+                                      : "bg-[#FF8B94]"
+                                  }`}
+                                >
+                                  {user.isActive ? "Active" : "Banned"}
+                                </span>
+                              </td>
+                              <td className="py-3 text-sm">
+                                {new Date(user.createdAt).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
-
-            {/* Pending Skills */}
-            <div className="bg-white border-2 border-black shadow-hard">
-              <div className="p-6 border-b-2 border-black flex justify-between items-center">
-                <h2 className="text-xl font-black uppercase">Pending Skills</h2>
-                <Link
-                  to="/admin/skills"
-                  className="text-sm font-bold uppercase hover:underline"
-                >
-                  View All →
-                </Link>
-              </div>
-              <div className="p-6">
-                <div className="space-y-4">
-                  {pendingSkills.map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="p-4 border-2 border-black bg-neutral-surface"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-black text-sm">{skill.name}</h3>
-                          <p className="text-xs text-neutral mt-1">
-                            Category: {skill.category}
-                          </p>
-                          <p className="text-xs text-neutral">
-                            By: {skill.user}
-                          </p>
-                        </div>
-                        <span className="px-3 py-1 bg-primary border-2 border-black text-xs font-black uppercase">
-                          {skill.status}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="flex-1 px-4 py-2 bg-secondary border-2 border-black font-bold uppercase text-xs hover:translate-x-[2px] hover:translate-y-[2px] transition-transform">
-                          Approve
-                        </button>
-                        <button className="flex-1 px-4 py-2 bg-tertiary border-2 border-black font-bold uppercase text-xs hover:translate-x-[2px] hover:translate-y-[2px] transition-transform">
-                          Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="mt-8 bg-white border-2 border-black shadow-hard p-6">
-            <h2 className="text-xl font-black uppercase mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <button className="p-4 border-2 border-black bg-primary font-bold uppercase text-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard transition-all">
-                <span className="material-symbols-outlined text-2xl mb-2">
-                  add
-                </span>
-                <br />
-                New User
-              </button>
-              <button className="p-4 border-2 border-black bg-secondary font-bold uppercase text-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard transition-all">
-                <span className="material-symbols-outlined text-2xl mb-2">
-                  category
-                </span>
-                <br />
-                Add Category
-              </button>
-              <button className="p-4 border-2 border-black bg-tertiary font-bold uppercase text-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard transition-all">
-                <span className="material-symbols-outlined text-2xl mb-2">
-                  flag
-                </span>
-                <br />
-                View Reports
-              </button>
-              <button className="p-4 border-2 border-black bg-background-light font-bold uppercase text-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard transition-all">
-                <span className="material-symbols-outlined text-2xl mb-2">
-                  analytics
-                </span>
-                <br />
-                Analytics
-              </button>
-            </div>
-          </div>
+          )}
         </main>
       </div>
     </div>

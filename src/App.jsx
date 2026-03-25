@@ -15,6 +15,11 @@ import Bookmarks from "./pages/user/Bookmarks";
 import Messages from "./pages/user/Messages";
 import Profile from "./pages/user/Profile";
 import AdminDashboard from "./pages/admin/Dashboard";
+import SkillApproval from "./pages/admin/SkillApproval";
+import Reports from "./pages/admin/Reports";
+import Users from "./pages/admin/Users";
+import AllSkills from "./pages/admin/AllSkills";
+import Categories from "./pages/admin/Categories";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
@@ -115,6 +120,46 @@ function App() {
             element={
               <AdminProtectedRoute>
                 <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/skills"
+            element={
+              <AdminProtectedRoute>
+                <SkillApproval />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/reports"
+            element={
+              <AdminProtectedRoute>
+                <Reports />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminProtectedRoute>
+                <Users />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/all-skills"
+            element={
+              <AdminProtectedRoute>
+                <AllSkills />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <AdminProtectedRoute>
+                <Categories />
               </AdminProtectedRoute>
             }
           />

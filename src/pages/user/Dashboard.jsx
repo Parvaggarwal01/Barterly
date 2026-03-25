@@ -211,7 +211,6 @@ const Dashboard = () => {
                     <div className="col-span-5">Trade Details</div>
                     <div className="col-span-3">Status</div>
                     <div className="col-span-2">Date</div>
-                    <div className="col-span-2 text-right">Action</div>
                   </div>
 
                   {/* Rows */}
@@ -255,10 +254,10 @@ const Dashboard = () => {
                                     key={idx}
                                     className={`w-10 h-10 rounded-full border-2 border-black overflow-hidden bg-gray-200 ${idx === 0 ? "z-10" : "z-0"}`}
                                   >
-                                    {person?.avatar ? (
+                                    {person?.avatar.url ? (
                                       <img
                                         className="w-full h-full object-cover"
-                                        src={person.avatar}
+                                        src={person.avatar.url}
                                         alt={person.name}
                                       />
                                     ) : (
@@ -297,14 +296,6 @@ const Dashboard = () => {
                           </div>
                           <div className="col-span-1 md:col-span-2 text-sm font-bold">
                             {formatDate(barter.createdAt)}
-                          </div>
-                          <div className="col-span-1 md:col-span-2 flex justify-end">
-                            <Link
-                              to="/requests"
-                              className="bg-transparent hover:bg-neutral-100 text-black border-2 border-black px-3 py-1 text-xs font-bold uppercase transition-colors active:translate-x-0.5 active:translate-y-0.5"
-                            >
-                              Details
-                            </Link>
                           </div>
                         </div>
                       );

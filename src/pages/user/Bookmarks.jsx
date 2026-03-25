@@ -132,9 +132,9 @@ const Bookmarks = () => {
                           <div className="flex items-center gap-2 min-w-0">
                             {/* Avatar */}
                             <div className="w-9 h-9 rounded-full border-2 border-black overflow-hidden bg-primary shrink-0">
-                              {skill.offeredBy?.avatar ? (
+                              {skill.offeredBy?.avatar.url ? (
                                 <img
-                                  src={skill.offeredBy.avatar}
+                                  src={skill.offeredBy.avatar.url}
                                   alt={skill.offeredBy.name}
                                   className="w-full h-full object-cover"
                                 />

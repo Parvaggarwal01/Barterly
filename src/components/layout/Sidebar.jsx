@@ -12,12 +12,16 @@ const Sidebar = ({ isOpen, onClose }) => {
     const fetchUserData = async () => {
       try {
         const response = await userService.getCurrentUserProfile();
-        const userData = response.data?.data?.user || response.data?.user || response.data;
+        const userData =
+          response.data?.data?.user || response.data?.user || response.data;
         if (userData) {
           setUser(userData);
           // Update local storage so other components get the fresh data
           const currentLocal = authService.getUser() || {};
-          localStorage.setItem("user", JSON.stringify({ ...currentLocal, ...userData }));
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ ...currentLocal, ...userData }),
+          );
         }
       } catch (error) {
         console.error("Failed to fetch user data for sidebar:", error);
@@ -37,11 +41,22 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: "/", icon: "home", label: "HOME" },
     { path: "/dashboard", icon: "dashboard", label: "OVERVIEW" },
     { path: "/my-skills", icon: "lightbulb", label: "MY SKILLS" },
-    { path: "/requests", icon: "swap_calls", label: "REQUESTS"},
-    { path: "/messages", icon: "chat", label: "MESSAGES"},
+    { path: "/requests", icon: "swap_calls", label: "REQUESTS" },
+    { path: "/messages", icon: "chat", label: "MESSAGES" },
     { path: "/bookmarks", icon: "bookmark", label: "BOOKMARKS" },
     { path: "/profile", icon: "person", label: "PROFILE" },
   ];
+
+  const adminNavItems = [
+    { path: "/admin/dashboard", icon: "dashboard", label: "DASHBOARD" },
+    { path: "/admin/users", icon: "group", label: "USERS" },
+    { path: "/admin/skills", icon: "approval", label: "SKILL APPROVALS" },
+    { path: "/admin/all-skills", icon: "inventory_2", label: "ALL SKILLS" },
+    { path: "/admin/categories", icon: "category", label: "CATEGORIES" },
+    { path: "/admin/reports", icon: "report", label: "REPORTS" },
+  ];
+
+  const items = user?.role === "admin" ? adminNavItems : navItems;
 
   return (
     <>
@@ -62,7 +77,8 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* User Profile Section */}
         <div className="p-6 border-b-2 border-black flex flex-col items-center text-center bg-neutral-50">
           <div className="w-20 h-20 border-2 border-black mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-            {user?.avatar?.url || (user?.avatar && typeof user.avatar === 'string') ? (
+            {user?.avatar?.url ||
+            (user?.avatar && typeof user.avatar === "string") ? (
               <img
                 src={user.avatar.url || user.avatar}
                 alt="User Avatar"
@@ -83,7 +99,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Navigation */}
         <nav className="flex flex-col flex-1 py-4">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.path}
               to={item.path}
