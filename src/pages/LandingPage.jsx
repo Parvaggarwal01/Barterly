@@ -1,6 +1,128 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import skillService from "../services/skillService";
+import categoryService from "../services/categoryService";
+import reviewService from "../services/reviewService";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [featuredSkills, setFeaturedSkills] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [catsRes, skillsRes, reviewsRes] = await Promise.all([
+          categoryService.getAllCategories(true),
+          skillService.getAllSkills({ limit: 6, sortOrder: "desc" }),
+          reviewService.getAllReviews({ limit: 3 }),
+        ]);
+
+        // Process categories to ensure we have 8 for the grid, using defaults if needed
+        const fetchedCats = catsRes.data?.categories || catsRes.data || [];
+        setCategories(fetchedCats.slice(0, 8));
+
+        // Process skills
+        const skills =
+          skillsRes.data?.skills || skillsRes.data?.data?.skills || [];
+        setFeaturedSkills(skills);
+
+        // Process reviews
+        const fetchedReviews = reviewsRes.data || reviewsRes || [];
+        setReviews(fetchedReviews);
+      } catch (error) {
+        console.error("Failed to fetch landing page data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fallback data for empty states
+  const fallbackCategories = [
+    {
+      emoji: "💻",
+      name: "Technology",
+      color: "bg-tertiary",
+      rotation: "-rotate-2",
+    },
+    {
+      emoji: "🎨",
+      name: "Design",
+      color: "bg-secondary",
+      rotation: "rotate-1",
+    },
+    { emoji: "🎸", name: "Music", color: "bg-primary", rotation: "-rotate-1" },
+    {
+      emoji: "🗣️",
+      name: "Languages",
+      color: "bg-blue-300",
+      rotation: "rotate-2",
+    },
+    {
+      emoji: "📈",
+      name: "Business",
+      color: "bg-orange-300",
+      rotation: "rotate-[-1deg]",
+    },
+    {
+      emoji: "✍️",
+      name: "Writing",
+      color: "bg-purple-300",
+      rotation: "rotate-[2deg]",
+    },
+    {
+      emoji: "💪",
+      name: "Lifestyle",
+      color: "bg-red-300",
+      rotation: "rotate-[-2deg]",
+    },
+    {
+      emoji: "🧶",
+      name: "Crafts",
+      color: "bg-yellow-200",
+      rotation: "rotate-[1deg]",
+    },
+  ];
+
+  const displayCategories =
+    categories.length > 0
+      ? categories.map((cat, index) => ({
+          ...cat,
+          emoji: cat.icon ? (
+            <span className="material-symbols-outlined text-5xl">
+              {cat.icon}
+            </span>
+          ) : (
+            "📦"
+          ),
+          color: [
+            "bg-tertiary",
+            "bg-secondary",
+            "bg-primary",
+            "bg-blue-300",
+            "bg-orange-300",
+            "bg-purple-300",
+            "bg-red-300",
+            "bg-yellow-200",
+          ][index % 8],
+          rotation: [
+            "-rotate-2",
+            "rotate-1",
+            "-rotate-1",
+            "rotate-2",
+            "rotate-[-1deg]",
+            "rotate-[2deg]",
+            "rotate-[-2deg]",
+            "rotate-[1deg]",
+          ][index % 8],
+        }))
+      : fallbackCategories;
+
   return (
     <div className="bg-background-light text-slate-900 overflow-x-hidden">
       {/* Hero Section */}
@@ -213,66 +335,21 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {[
-              {
-                emoji: "💻",
-                name: "Technology",
-                color: "bg-tertiary",
-                rotation: "-rotate-2",
-              },
-              {
-                emoji: "🎨",
-                name: "Design",
-                color: "bg-secondary",
-                rotation: "rotate-1",
-              },
-              {
-                emoji: "🎸",
-                name: "Music",
-                color: "bg-primary",
-                rotation: "-rotate-1",
-              },
-              {
-                emoji: "🗣️",
-                name: "Languages",
-                color: "bg-blue-300",
-                rotation: "rotate-2",
-              },
-              {
-                emoji: "📈",
-                name: "Business",
-                color: "bg-orange-300",
-                rotation: "rotate-[-1deg]",
-              },
-              {
-                emoji: "✍️",
-                name: "Writing",
-                color: "bg-purple-300",
-                rotation: "rotate-[2deg]",
-              },
-              {
-                emoji: "💪",
-                name: "Lifestyle",
-                color: "bg-red-300",
-                rotation: "rotate-[-2deg]",
-              },
-              {
-                emoji: "🧶",
-                name: "Crafts",
-                color: "bg-yellow-200",
-                rotation: "rotate-[1deg]",
-              },
-            ].map((category, index) => (
+            {displayCategories.map((category, index) => (
               <Link
                 key={index}
-                to="/browse"
+                to={`/browse?category=${category.slug || ""}`}
                 className="group bg-white border-2 border-border-dark p-6 shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex flex-col items-center justify-center text-center gap-4 h-48"
               >
-                <span className="text-5xl filter drop-shadow-[2px_2px_0_rgba(0,0,0,1)] group-hover:scale-110 transition-transform duration-200">
-                  {category.emoji}
-                </span>
+                <div className="text-5xl filter drop-shadow-[2px_2px_0_rgba(0,0,0,1)] group-hover:scale-110 transition-transform duration-200">
+                  {category.icon ? (
+                    <span className="material-symbols-outlined text-5xl">{category.icon}</span>
+                  ) : (
+                    category.emoji || "📦"
+                  )}
+                </div>
                 <h3
-                  className={`font-black text-lg uppercase ${category.color} px-2 border-2 border-border-dark ${category.rotation} group-hover:rotate-0 transition-transform`}
+                  className={`font-black text-lg uppercase ${category.color || "bg-white"} px-2 border-2 border-border-dark ${category.rotation || ""} group-hover:rotate-0 transition-transform`}
                 >
                   {category.name}
                 </h3>
@@ -291,84 +368,59 @@ const LandingPage = () => {
         </h2>
 
         <div className="flex overflow-x-auto gap-8 pb-12 pt-4 no-scrollbar snap-x">
-          {[
-            {
-              title: "Logo & Brand Identity",
-              category: "DESIGN",
-              categoryColor: "bg-secondary",
-              author: "Alex M.",
-              image:
-                "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
-            },
-            {
-              title: "Python Scripting",
-              category: "TECH",
-              categoryColor: "bg-tertiary",
-              author: "David K.",
-              image:
-                "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=400&h=300&fit=crop",
-            },
-            {
-              title: "Piano Lessons",
-              category: "MUSIC",
-              categoryColor: "bg-secondary",
-              author: "Elena R.",
-              image:
-                "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=300&fit=crop",
-            },
-            {
-              title: "Personal Training",
-              category: "LIFESTYLE",
-              categoryColor: "bg-red-300",
-              author: "Marcus T.",
-              image:
-                "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
-            },
-          ].map((skill, index) => (
-            <div
-              key={index}
-              className="snap-center shrink-0 w-[300px] bg-white border-2 border-border-dark flex flex-col shadow-hard hover:shadow-hard-lg transition-shadow duration-300"
-            >
-              <div className="relative h-48 border-b-2 border-border-dark overflow-hidden group">
-                <div
-                  className={`absolute top-3 left-3 ${skill.categoryColor} text-xs font-black px-2 py-1 border-2 border-border-dark z-10`}
-                >
-                  {skill.category}
-                </div>
-                <img
-                  src={skill.image}
-                  alt={skill.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                />
-              </div>
-              <div className="p-5 flex flex-col gap-3 flex-1">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-black text-xl leading-tight uppercase">
-                    {skill.title}
-                  </h3>
-                  <span
-                    className="material-symbols-outlined text-[#2dd4bf]"
-                    title="Verified"
-                  >
-                    verified
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mt-auto pt-4 border-t-2 border-border-dark border-dashed">
-                  <div className="w-8 h-8 rounded-full border-2 border-border-dark overflow-hidden">
-                    <img
-                      className="w-full h-full object-cover"
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${skill.author}`}
-                      alt={skill.author}
-                    />
-                  </div>
-                  <span className="text-sm font-bold">By {skill.author}</span>
-                </div>
-                <button className="w-full mt-4 bg-primary text-border-dark font-bold text-sm py-3 border-2 border-border-dark shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase">
-                  View Skill
-                </button>
-              </div>
+          {featuredSkills.length === 0 ? (
+            <div className="w-full text-center py-12 border-2 border-border-dark bg-white shadow-hard">
+              <p className="text-xl font-bold">No featured skills yet.</p>
+              <Link to="/browse" className="text-primary font-black underline mt-2 inline-block">Browse all skills</Link>
             </div>
-          ))}
+          ) : (
+            featuredSkills.map((skill, index) => {
+              const bgColors = ["bg-secondary", "bg-tertiary", "bg-primary", "bg-red-300", "bg-orange-300", "bg-purple-300"];
+              const categoryColor = bgColors[index % bgColors.length];
+
+              return (
+                <div
+                  key={skill._id}
+                  className="snap-center shrink-0 w-[300px] bg-white border-2 border-border-dark flex flex-col shadow-hard hover:shadow-hard-lg transition-shadow duration-300"
+                >
+                  <div className="p-5 flex flex-col gap-3 flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-black text-xl leading-tight uppercase line-clamp-2">
+                        {skill.title}
+                      </h3>
+                      {skill.offeredBy?.isVerified && (
+                        <span
+                          className="material-symbols-outlined text-[#2dd4bf] shrink-0"
+                          title="Verified User"
+                        >
+                          verified
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-auto pt-4 border-t-2 border-border-dark border-dashed">
+                      <div className="w-8 h-8 rounded-full border-2 border-border-dark overflow-hidden bg-gray-200 flex items-center justify-center">
+                        {skill.offeredBy?.avatar?.url ? (
+                          <img
+                            className="w-full h-full object-cover"
+                            src={skill.offeredBy.avatar.url}
+                            alt={skill.offeredBy.name}
+                          />
+                        ) : (
+                          <span className="font-bold text-xs">{skill.offeredBy?.name?.charAt(0)}</span>
+                        )}
+                      </div>
+                      <span className="text-sm font-bold truncate">By {skill.offeredBy?.name}</span>
+                    </div>
+                    <Link to={`/skills/${skill._id}`}>
+                      <button className="w-full mt-4 bg-primary text-border-dark font-bold text-sm py-3 border-2 border-border-dark shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase">
+                        View Skill
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
 
@@ -411,57 +463,51 @@ const LandingPage = () => {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              name: "Jessica L.",
-              role: "Marketing Guru",
-              text: '"I traded my SEO skills for French lessons. Now I can optimize websites AND order croissants like a pro. Best swap ever."',
-            },
-            {
-              name: "Tom H.",
-              role: "Accountant",
-              text: '"Found a carpenter to fix my shelves in exchange for some tax advice. Quick, easy, and zero money spent. Love this concept!"',
-            },
-            {
-              name: "Emily R.",
-              role: "Graphic Designer",
-              text: '"Barterly helped me build my portfolio while helping others. It\'s a win-win for everyone involved. The community is super supportive."',
-            },
-          ].map((testimonial, index) => (
-            <div
-              key={index}
-              className={`bg-white border-2 border-border-dark p-6 shadow-hard flex flex-col gap-4 relative ${index === 1 ? "md:translate-y-4" : ""}`}
-            >
-              <div className="flex text-primary">
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className="material-symbols-outlined fill-current"
-                  >
-                    star
-                  </span>
-                ))}
-              </div>
-              <p className="text-lg font-medium italic">{testimonial.text}</p>
-              <div className="flex items-center gap-3 mt-auto pt-4 border-t-2 border-border-dark">
-                <div className="w-10 h-10 bg-gray-200 border-2 border-border-dark rounded-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${testimonial.name}`}
-                    alt={testimonial.name}
-                  />
-                </div>
-                <div>
-                  <p className="font-bold text-sm uppercase">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-xs font-mono text-gray-500">
-                    {testimonial.role}
-                  </p>
-                </div>
-              </div>
+          {reviews.length === 0 ? (
+            <div className="col-span-full text-center py-12 bg-white border-2 border-border-dark shadow-hard">
+               <p className="text-xl font-bold">Community stories coming soon!</p>
             </div>
-          ))}
+          ) : (
+            reviews.map((review, index) => (
+              <div
+                key={review._id}
+                className={`bg-white border-2 border-border-dark p-6 shadow-hard flex flex-col gap-4 relative ${index === 1 ? "md:translate-y-4" : ""}`}
+              >
+                <div className="flex text-primary">
+                  {[...Array(5)].map((_, i) => (
+                    <span
+                      key={i}
+                      className={`material-symbols-outlined ${i < review.rating ? "fill-current" : "text-gray-300"}`}
+                    >
+                      star
+                    </span>
+                  ))}
+                </div>
+                <p className="text-lg font-medium italic line-clamp-4">"{review.comment}"</p>
+                <div className="flex items-center gap-3 mt-auto pt-4 border-t-2 border-border-dark">
+                  <div className="w-10 h-10 bg-gray-200 border-2 border-border-dark rounded-full overflow-hidden flex items-center justify-center">
+                    {review.reviewer?.avatar?.url ? (
+                      <img
+                        className="w-full h-full object-cover"
+                        src={review.reviewer.avatar.url}
+                        alt={review.reviewer.name}
+                      />
+                    ) : (
+                      <span className="font-bold">{review.reviewer?.name?.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm uppercase">
+                      {review.reviewer?.name}
+                    </p>
+                    <p className="text-xs font-mono text-gray-500">
+                      {review.reviewer?.location || "Community Member"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
