@@ -7,6 +7,7 @@ import SkillDetail from "./pages/SkillDetail";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import VerifyEmail from "./pages/auth/VerifyEmail";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import UserDashboard from "./pages/user/Dashboard";
 import MySkills from "./pages/user/MySkills";
 import PostSkill from "./pages/user/PostSkill";
@@ -31,6 +32,7 @@ function App() {
     "/register",
     "/login",
     "/verify-email",
+    "/forgot-password",
     "/dashboard",
     "/my-skills",
     "/post-skill",
@@ -55,6 +57,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* User Dashboard Routes */}
           <Route

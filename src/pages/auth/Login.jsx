@@ -46,6 +46,7 @@ const Login = () => {
       const response = await authService.login({
         email: formData.email,
         password: formData.password,
+        rememberMe: formData.rememberMe,
       });
 
       console.log("Login successful:", response);
@@ -70,10 +71,24 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError(
-        err.message ||
-          "Login failed. Please check your credentials and try again.",
-      );
+      console.log("Error structure:", JSON.stringify(err.messgae, null, 2));
+      console.log("err.message:", err?.message);
+      console.log("err.error:", err?.error);
+      console.log("err.errors:", err?.errors);
+
+      // Extract accurate error message from backend response
+      let errorMessage = "Login failed. Please try again.";
+
+      if (err?.message) {
+        errorMessage = err.message;
+      } else if (err?.errors && Array.isArray(err.errors)) {
+        // Handle validation errors
+        errorMessage = err.errors.map(e => e.message).join(", ");
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

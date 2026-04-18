@@ -113,7 +113,7 @@ const authService = {
   },
 
   /**
-   * Forgot password - request reset
+   * Forgot password - request reset OTP
    * @param {string} email - User's email
    * @returns {Promise<Object>} - Result message
    */
@@ -127,15 +127,20 @@ const authService = {
   },
 
   /**
-   * Reset password with token
-   * @param {string} token - Reset token from email
+   * Reset password with OTP
+   * @param {string} email - User's email
+   * @param {string} otp - 6-digit OTP
    * @param {string} password - New password
+   * @param {string} confirmPassword - Confirm new password
    * @returns {Promise<Object>} - Result message
    */
-  resetPassword: async (token, password) => {
+  resetPassword: async (email, otp, password, confirmPassword) => {
     try {
-      const response = await api.post(`/auth/reset-password/${token}`, {
+      const response = await api.post("/auth/reset-password", {
+        email,
+        otp,
         password,
+        confirmPassword,
       });
       return response.data;
     } catch (error) {
