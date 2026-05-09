@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+
+@theme {
+  /* Colors - Updated to match neo-brutalist design */
+  --color-primary: #ffdd57;
+  --color-primary-dark: #e6c300;
+  --color-accent-teal: #4ecdc4;
+  --color-accent-pink: #ff8b94;
+  --color-accent-red: #ff6b6b;
+  --color-neutral-surface: #fffbf0;
+  --color-background-light: #fffbf0;
+  --color-background-dark: #181710;
+  --color-border-dark: #000000;
+  --color-neutral-border: #000000;
+  --color-neutral: #737373;
+
+  /* Font Family - Space Grotesk */
+  --font-family-display: "Space Grotesk", ui-sans-serif, system-ui;
+  --font-family-body: "Space Grotesk", ui-sans-serif, system-ui;
+
+  /* Border Radius - Neo-brutalist sharp edges */
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-full: 0px;
+}
+
+/* Custom shadows as CSS variables (Tailwind v4 doesn't support box-shadow in @theme yet) */
+:root {
+  --shadow-hard: 4px 4px 0px 0px #000000;
+  --shadow-hard-sm: 2px 2px 0px 0px #000000;
+  --shadow-hard-md: 6px 6px 0px 0px #000000;
+  --shadow-hard-lg: 8px 8px 0px 0px #000000;
+  --shadow-hard-xl: 12px 12px 0px 0px #000000;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+body {
+  font-family: var(--font-family-body);
+}
+
+/* Custom utility classes */
+.text-stroke {
+  -webkit-text-stroke: 1px #000000;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #fffbf0;
+  border-left: 2px solid #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #ffdd57;
+  border: 2px solid #000000;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #000000;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.shadow-hard {
+  box-shadow: var(--shadow-hard);
+}
+
+.shadow-hard-sm {
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.shadow-hard-lg {
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined" !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.material-symbols-outlined.fill-current {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
