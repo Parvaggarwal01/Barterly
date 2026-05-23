@@ -57,10 +57,20 @@ app.get("/metrics", async (req, res) => {
 app.use(helmet());
 
 // CORS - Cross-Origin Resource Sharing
+const configuredOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URLS,
+]
+  .filter(Boolean)
+  .flatMap((origins) => origins.split(","))
+  .map((origin) => origin.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
+  ...configuredOrigins,
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://barterly-web.vercel.app",
   "https://white-mushroom-0e2ffb300.5.azurestaticapps.net", // Add potential azure static web apps domains if known, or just rely on FRONTEND_URL
 ];
 
@@ -72,8 +82,10 @@ app.use(
 
       // In production/Azure we want to be permissive if FRONTEND_URL isn't perfectly matched during setup
       // A more robust approach checks if origin is in the allowed list, OR if it's a completely open environment variable
+      const normalizedOrigin = origin.replace(/\/$/, "");
+
       if (
-        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes(normalizedOrigin) ||
         process.env.NODE_ENV !== "production"
       ) {
         callback(null, true);
