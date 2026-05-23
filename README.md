@@ -143,6 +143,9 @@ barterly/
    # Frontend URL
    FRONTEND_URL=http://localhost:5173
 
+   # Reverse proxy
+   TRUST_PROXY=1
+
    # Redis
    REDIS_URL=rediss://default:password@host:port
 
@@ -472,6 +475,7 @@ npm run build
 | `JWT_ACCESS_EXPIRE`     | Token expiry        | 15m                       |
 | `SMTP_USER`             | Email address       | your@gmail.com            |
 | `FRONTEND_URL`          | Frontend URL        | http://localhost:5173     |
+| `TRUST_PROXY`           | Trusted proxy hops  | 1                         |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary account  | your_cloud_name           |
 | `REDIS_URL`             | Redis connection    | rediss://...              |
 | `CLOUDAMQP_URL`         | RabbitMQ connection | amqps://...               |

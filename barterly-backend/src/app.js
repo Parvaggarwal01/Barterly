@@ -41,6 +41,9 @@ import metricsMiddleware from "./middlewares/metrics.middleware.js";
 
 const app = express();
 
+const trustProxy = process.env.TRUST_PROXY ?? (process.env.NODE_ENV === "production" ? "1" : "0");
+app.set("trust proxy", Number(trustProxy));
+
 app.use(metricsMiddleware);
 
 app.get("/metrics", async (req, res) => {

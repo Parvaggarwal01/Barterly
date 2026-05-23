@@ -85,6 +85,9 @@ SMTP_PASS=your_app_password
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+# Reverse proxy
+TRUST_PROXY=1
 ```
 
 ### 3. Setting up Gmail for Nodemailer
@@ -152,6 +155,7 @@ Use values from `.env.example` and ensure these are set on your host (Render/Rai
 
 - `MONGODB_URI`
 - `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`
+- `TRUST_PROXY` (`1` for Azure App Service)
 - `REDIS_URL`
 - `CLOUDAMQP_URL`
 - `SMTP_USER`, `SMTP_PASS`
