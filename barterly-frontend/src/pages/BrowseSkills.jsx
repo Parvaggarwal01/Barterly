@@ -18,7 +18,7 @@ const BrowseSkills = () => {
   const [selectedDelivery, setSelectedDelivery] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortOrder] = useState("desc");
 
   // Fetch categories on mount
   useEffect(() => {

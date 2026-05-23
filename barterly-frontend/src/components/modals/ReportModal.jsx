@@ -24,7 +24,6 @@ const REASONS = [
 
 const ReportModal = ({
   barter,
-  currentUser,
   reportedUser,
   onClose,
   onSuccess,

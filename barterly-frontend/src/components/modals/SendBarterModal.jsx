@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import skillService from "../../services/skillService";
 import barterService from "../../services/barterService";
-import authService from "../../services/authService";
 
 const SendBarterModal = ({ isOpen, onClose, requestedSkill }) => {
   const [mySkills, setMySkills] = useState([]);

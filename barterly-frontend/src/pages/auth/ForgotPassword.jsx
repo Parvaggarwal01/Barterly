@@ -127,9 +127,9 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.forgotPassword(formData.email);
+      await authService.forgotPassword(formData.email);
       setSuccessMessage("New OTP sent to your email!");
-    } catch (err) {
+    } catch {
       setError("Failed to resend OTP. Please try again.");
     } finally {
       setIsLoading(false);

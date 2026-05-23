@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import skillService from "../services/skillService";
 import categoryService from "../services/categoryService";
 import reviewService from "../services/reviewService";
 
 const LandingPage = () => {
-  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [featuredSkills, setFeaturedSkills] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,8 +32,6 @@ const LandingPage = () => {
         setReviews(fetchedReviews);
       } catch (error) {
         console.error("Failed to fetch landing page data:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -374,10 +370,7 @@ const LandingPage = () => {
               <Link to="/browse" className="text-primary font-black underline mt-2 inline-block">Browse all skills</Link>
             </div>
           ) : (
-            featuredSkills.map((skill, index) => {
-              const bgColors = ["bg-secondary", "bg-tertiary", "bg-primary", "bg-red-300", "bg-orange-300", "bg-purple-300"];
-              const categoryColor = bgColors[index % bgColors.length];
-
+            featuredSkills.map((skill) => {
               return (
                 <div
                   key={skill._id}

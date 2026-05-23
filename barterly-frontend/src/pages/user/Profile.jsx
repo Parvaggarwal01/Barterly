@@ -6,12 +6,6 @@ import userService from "../../services/userService";
 import authService from "../../services/authService";
 import ReviewModal from "../../components/modals/ReviewModal";
 
-const levelColors = {
-  beginner: "bg-primary",
-  intermediate: "bg-accent-teal",
-  advanced: "bg-accent-pink",
-};
-
 const Profile = () => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [user, setUser] = useState(null);

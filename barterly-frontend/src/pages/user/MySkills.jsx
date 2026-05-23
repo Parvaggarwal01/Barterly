@@ -19,7 +19,6 @@ const MySkills = () => {
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create' or 'edit'
   const [selectedSkill, setSelectedSkill] = useState(null);
   
   // Form state
@@ -67,7 +66,6 @@ const MySkills = () => {
   };
 
   const openEditModal = (skill) => {
-    setModalMode('edit');
     setSelectedSkill(skill);
     setFormData({
       title: skill.title,

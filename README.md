@@ -411,11 +411,21 @@ User Inbox
 
 ## 🧪 Testing
 
-### Currently
+### Backend
 
 ```bash
-# No tests implemented yet
+cd barterly-backend
 npm test
+```
+
+The backend uses Node.js built-in test runner for isolated tests that do not require MongoDB, Redis, RabbitMQ, SMTP, or Cloudinary. Current coverage includes authentication validation schemas.
+
+### Frontend
+
+```bash
+cd barterly-frontend
+npm run lint
+npm run build
 ```
 
 ### Planned

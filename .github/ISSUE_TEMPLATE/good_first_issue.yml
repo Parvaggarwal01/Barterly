@@ -1,0 +1,56 @@
+name: Good first issue
+description: Propose a beginner-friendly task for new contributors.
+title: "good first issue: "
+labels: ["good first issue", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Good first issues should be small, clear, and suitable for contributors with limited project experience.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Frontend
+        - Backend
+        - Documentation
+        - Tests
+        - Dev tooling
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: What should be changed?
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Suggested files
+      description: Point contributors to the likely files or folders.
+      placeholder: |
+        - barterly-frontend/src/pages/...
+        - barterly-backend/src/services/...
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List exactly what must be true for the issue to be complete.
+      placeholder: |
+        - ...
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing notes
+      description: Explain how the contributor should verify the change.
+    validations:
+      required: true

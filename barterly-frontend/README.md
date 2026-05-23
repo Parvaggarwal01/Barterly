@@ -1,16 +1,134 @@
-# React + Vite
+# Barterly Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for Barterly, a peer-to-peer skill bartering platform where users can post skills, browse offers, send barter requests, chat in real time, save bookmarks, leave reviews, and manage profiles.
 
-Currently, two official plugins are available:
+For full-stack setup, backend documentation, and architecture details, see the root [`README.md`](../README.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+- React 19
+- Vite 7
+- Tailwind CSS 4
+- React Router 7
+- Axios
+- Socket.io client
+- ESLint
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Public landing page and skill browsing
+- Login, registration, email verification, and password reset flows
+- User dashboard, profile, bookmarks, skills, barter requests, and messages
+- Real-time chat powered by Socket.io
+- Admin dashboard for users, skills, reports, categories, and approvals
+- API service layer for backend communication
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Prerequisites
+
+- Node.js 18 or higher
+- npm
+- Running Barterly backend API
+
+## Environment Variables
+
+Create a `.env` file inside `barterly-frontend`:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+`VITE_API_URL` should point to the backend API base URL. For local development, the backend usually runs on `http://localhost:3000`.
+
+## Installation
+
+```bash
+cd barterly-frontend
+npm install
+```
+
+## Development
+
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`.
+
+## Available Scripts
+
+```bash
+npm run dev
+```
+
+Runs the local development server.
+
+```bash
+npm run lint
+```
+
+Runs ESLint checks.
+
+```bash
+npm run build
+```
+
+Creates a production build in `dist`.
+
+```bash
+npm run preview
+```
+
+Serves the production build locally for review.
+
+## Project Structure
+
+```text
+barterly-frontend/
+├── public/                 # Static public assets
+├── src/
+│   ├── assets/             # Images and static app assets
+│   ├── components/         # Shared UI components
+│   │   ├── layout/         # Header, sidebar, footer
+│   │   └── modals/         # Reusable modal components
+│   ├── pages/              # Route-level pages
+│   │   ├── admin/          # Admin dashboard pages
+│   │   ├── auth/           # Login, register, verify, reset
+│   │   └── user/           # User dashboard pages
+│   ├── services/           # API and Socket.io service wrappers
+│   ├── App.jsx             # App routes
+│   ├── index.css           # Global styles and Tailwind imports
+│   └── main.jsx            # React entry point
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+## Backend Connection
+
+The frontend uses `src/services/api.js` for REST API requests and `src/services/socketService.js` for real-time chat.
+
+If requests fail locally, check:
+
+- The backend server is running.
+- `VITE_API_URL` includes `/api`.
+- The backend `FRONTEND_URL` allows `http://localhost:5173`.
+- Your browser has the latest frontend code after restarting Vite.
+
+## Contributor Notes
+
+- Keep page-level logic inside `src/pages`.
+- Put reusable UI in `src/components`.
+- Use the existing service files instead of calling Axios directly from new pages.
+- Keep pull requests focused on one issue.
+- Run lint and build before opening a pull request.
+
+## Verification
+
+Before submitting frontend changes, run:
+
+```bash
+npm run lint
+npm run build
+```

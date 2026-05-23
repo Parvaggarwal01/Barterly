@@ -350,6 +350,14 @@ Authorization: Bearer <access_token>
 
 ## 🧪 Testing with Postman/Thunder Client
 
+Automated backend tests use Node.js built-in test runner.
+
+```bash
+npm test
+```
+
+The current automated tests cover authentication validation schemas and do not require MongoDB, Redis, RabbitMQ, SMTP, or Cloudinary.
+
 ### 1. Register
 
 POST `http://localhost:5000/api/auth/register`
