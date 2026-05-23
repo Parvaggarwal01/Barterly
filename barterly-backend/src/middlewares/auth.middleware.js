@@ -5,10 +5,19 @@ import { verifyAccessToken, isTokenBlacklisted } from "../utils/jwt.utils.js";
 
 export const authenticate = async (req, res, next) => {
   try {
+    const debugAuth = process.env.DEBUG_AUTH === "true";
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      if (debugAuth) {
+        console.warn("[auth.middleware] missing bearer token", {
+          method: req.method,
+          path: req.originalUrl,
+          origin: req.headers.origin,
+          hasAuthorization: !!authHeader,
+        });
+      }
       return errorResponse(res, 401, "Access token is required");
     }
 
@@ -23,12 +32,27 @@ export const authenticate = async (req, res, next) => {
     try {
       decoded = verifyAccessToken(token);
     } catch (error) {
+      if (debugAuth) {
+        console.warn("[auth.middleware] invalid access token", {
+          method: req.method,
+          path: req.originalUrl,
+          origin: req.headers.origin,
+          error: error.message,
+        });
+      }
       return errorResponse(res, 401, "Invalid or expired access token");
     }
 
     if(decoded.jti){
       const blacklisted = await isTokenBlacklisted(decoded.jti);
       if(blacklisted){
+        if (debugAuth) {
+          console.warn("[auth.middleware] blacklisted access token", {
+            method: req.method,
+            path: req.originalUrl,
+            userId: decoded.userId,
+          });
+        }
         return errorResponse(res, 401, "Token has been invalidated. Please log in again");
       }
     }
@@ -37,6 +61,13 @@ export const authenticate = async (req, res, next) => {
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
+      if (debugAuth) {
+        console.warn("[auth.middleware] token user not found", {
+          method: req.method,
+          path: req.originalUrl,
+          userId: decoded.userId,
+        });
+      }
       return errorResponse(res, 401, "User not found");
     }
 
