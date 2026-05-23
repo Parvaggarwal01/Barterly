@@ -1,6 +1,7 @@
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import redis from "./redis.js";
+import { rateLimitKeyGenerator } from "../utils/ip.utils.js";
 
 const makeStore = (prefix) =>
   new RedisStore({
@@ -11,6 +12,7 @@ export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   store: makeStore("rl:auth"),
+  keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -23,6 +25,7 @@ export const otpLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
   store: makeStore("rl:otp"),
+  keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -35,6 +38,7 @@ export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   store: makeStore("rl:api"),
+  keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -47,6 +51,7 @@ export const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 50,
   store: makeStore("rl:upload"),
+  keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
