@@ -8,6 +8,14 @@ Barterly is a modern, full-stack peer-to-peer skill bartering platform where use
 
 ---
 
+## 🌐 Live Deployment
+
+- **Frontend**: [https://barterly-web.vercel.app](https://barterly-web.vercel.app)
+- **Backend API**: [https://barterly-api-f0fhamd9bzbggae7.centralindia-01.azurewebsites.net](https://barterly-api-f0fhamd9bzbggae7.centralindia-01.azurewebsites.net)
+- **Health Check**: [https://barterly-api-f0fhamd9bzbggae7.centralindia-01.azurewebsites.net/health](https://barterly-api-f0fhamd9bzbggae7.centralindia-01.azurewebsites.net/health)
+
+---
+
 ## 🎯 Platform Overview
 
 Barterly enables skill exchange through an intuitive marketplace where users can:
@@ -510,11 +518,21 @@ git push origin feature/feature-name
 
 ### Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Please read the contribution docs before opening an issue or pull request:
+
+- [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Frontend README](barterly-frontend/README.md)
+- [Backend README](barterly-backend/README.md)
+- [Open Issues](https://github.com/Parvaggarwal01/Barterly/issues)
+
+Recommended workflow:
+
+1. Fork the repository.
+2. Pick an assigned issue or request assignment on an open issue.
+3. Create a feature branch (`git checkout -b feature/feature-name`).
+4. Make focused changes and run the relevant checks.
+5. Push your branch and open a pull request.
 
 ### Code Style
 
@@ -612,7 +630,7 @@ git push origin feature/feature-name
 
 ## 📄 License
 
-This project is licensed under the ISC License - see the LICENSE file for details.
+This project is licensed under the ISC License - see [LICENSE](LICENSE) for details.
 
 ---
 
@@ -636,7 +654,7 @@ This project is licensed under the ISC License - see the LICENSE file for detail
 
 For questions or feedback, please open an issue on GitHub or reach out directly.
 
-**Last Updated**: May 10, 2026
+**Last Updated**: May 24, 2026
 
 ---
 
