@@ -94,11 +94,6 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google OAuth
-    console.log("Google Sign-In clicked");
-  };
-
   return (
     <div className="bg-background-light h-screen w-full overflow-hidden flex flex-col lg:flex-row">
       {/* Left Panel: Brand & Features */}
@@ -289,32 +284,6 @@ const Login = () => {
               )}
             </button>
           </form>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-neutral-300"></div>
-            </div>
-            <div className="relative bg-background-light px-4">
-              <span className="text-neutral-500 font-bold text-sm uppercase">
-                Or
-              </span>
-            </div>
-          </div>
-
-          {/* Social Login */}
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="w-full bg-white text-black font-bold text-lg py-3 border-2 border-black shadow-hard hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard-sm active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex justify-center items-center gap-3"
-          >
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2dL-90LIzVnOKgPfblBXykNy-Liywy1hyIWQfojhADv3m_AtNsUZ8rfkSu75HTCgIMRR2gQHeUnj7tnYrCtI_eOMRLSZ5HMUmLWpVUsTGKotNfE5quDuBlQvEV647mIlHheJnUJdbtxR_CBzXeupW5dH6GdNQqy-gj5PjbKtSvdlQT3F17mg459RdR2stT653yXOybH36lqpKGwnvlWpHk4E7f6isbfxXGpP3DsG4QH1zZXgTroGYHXbCniarPLJtw96D15e4ow"
-              alt="Google Logo"
-              className="w-6 h-6"
-            />
-            Sign in with Google
-          </button>
 
           {/* Mobile Footer Link */}
           <div className="mt-4 text-center lg:hidden">
