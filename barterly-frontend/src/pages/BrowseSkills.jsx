@@ -8,6 +8,7 @@ const BrowseSkills = () => {
   const [skills, setSkills] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [skillsError, setSkillsError] = useState("");
   const [totalSkills, setTotalSkills] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -38,60 +39,63 @@ const BrowseSkills = () => {
     fetchCategories();
   }, []);
 
+  const fetchSkills = async () => {
+    try {
+      setLoading(true);
+      setSkillsError("");
+      const params = {
+        page: currentPage,
+        limit: 6,
+        sortBy,
+        sortOrder,
+      };
+
+      if (searchQuery) params.search = searchQuery;
+      if (selectedLevel) params.level = selectedLevel;
+      if (selectedDelivery) params.deliveryMode = selectedDelivery;
+      if (selectedCategories.length > 0)
+        params.category = selectedCategories[0]; // Single category for now
+
+      const response = await skillService.getAllSkills(params);
+
+      // Handle different response structures
+      let skillsData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.skills || response.data?.data || [];
+
+      // Filter out current user's skills if logged in
+      const currentUser = authService.getUser();
+      if (currentUser && currentUser._id) {
+        skillsData = skillsData.filter(
+          (skill) =>
+            skill.offeredBy?._id?.toString() !== currentUser._id.toString(),
+        );
+      }
+
+      if (currentPage === 1) {
+        setSkills(skillsData);
+      } else {
+        setSkills((prev) => [...prev, ...skillsData]);
+      }
+
+      setTotalSkills(
+        response.data?.pagination?.total ||
+          response.pagination?.total ||
+          skillsData.length ||
+          0,
+      );
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+      setSkills([]);
+      setTotalSkills(0);
+      setSkillsError("We couldn't load skills right now. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch skills with filters
   useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        setLoading(true);
-        const params = {
-          page: currentPage,
-          limit: 6,
-          sortBy,
-          sortOrder,
-        };
-
-        if (searchQuery) params.search = searchQuery;
-        if (selectedLevel) params.level = selectedLevel;
-        if (selectedDelivery) params.deliveryMode = selectedDelivery;
-        if (selectedCategories.length > 0)
-          params.category = selectedCategories[0]; // Single category for now
-
-        const response = await skillService.getAllSkills(params);
-
-        // Handle different response structures
-        let skillsData = Array.isArray(response.data)
-          ? response.data
-          : response.data?.skills || response.data?.data || [];
-
-        // Filter out current user's skills if logged in
-        const currentUser = authService.getUser();
-        if (currentUser && currentUser._id) {
-          skillsData = skillsData.filter(
-            (skill) =>
-              skill.offeredBy?._id?.toString() !== currentUser._id.toString(),
-          );
-        }
-
-        if (currentPage === 1) {
-          setSkills(skillsData);
-        } else {
-          setSkills((prev) => [...prev, ...skillsData]);
-        }
-
-        setTotalSkills(
-          response.data?.pagination?.total ||
-            response.pagination?.total ||
-            skillsData.length ||
-            0,
-        );
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-        setSkills([]);
-        setTotalSkills(0);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchSkills();
   }, [
@@ -409,6 +413,25 @@ const BrowseSkills = () => {
                 <p className="font-bold uppercase text-sm mt-4">
                   Loading skills...
                 </p>
+              </div>
+            </div>
+          ) : skillsError ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center max-w-md bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                <span className="material-symbols-outlined text-6xl text-red-600 mb-4">
+                  error
+                </span>
+                <p className="font-black uppercase text-xl mb-3">
+                  Unable to load skills
+                </p>
+                <p className="text-sm text-gray-600 mb-6">{skillsError}</p>
+                <button
+                  type="button"
+                  onClick={fetchSkills}
+                  className="px-6 py-3 bg-primary border-2 border-black font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-px hover:translate-y-px hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+                >
+                  Try Again
+                </button>
               </div>
             </div>
           ) : skills.length === 0 ? (
