@@ -9,6 +9,7 @@ const PostSkill = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   // Form data
   const [formData, setFormData] = useState({
@@ -52,12 +53,33 @@ const PostSkill = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setValidationError("");
   };
 
   const handleLearningOutcomeChange = (index, value) => {
     const newOutcomes = [...formData.learningOutcomes];
     newOutcomes[index] = value;
     setFormData((prev) => ({ ...prev, learningOutcomes: newOutcomes }));
+    setValidationError("");
+  };
+
+  const validateStep = (step) => {
+    if (step === 1) {
+      if (!formData.title.trim()) return "Please enter a skill title.";
+      if (!formData.category) return "Please choose a category.";
+      if (!formData.description.trim()) return "Please describe your skill.";
+      if (!formData.learningOutcomes.some((outcome) => outcome.trim())) {
+        return "Please add at least one learning outcome.";
+      }
+    }
+
+    if (step === 2) {
+      if (!formData.level) return "Please choose a skill level.";
+      if (!formData.deliveryMode) return "Please choose a delivery mode.";
+      if (!formData.availability.trim()) return "Please enter your availability.";
+    }
+
+    return "";
   };
 
   const addLearningOutcome = () => {
@@ -77,7 +99,14 @@ const PostSkill = () => {
   };
 
   const handleNext = () => {
+    const error = validateStep(currentStep);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+
     if (currentStep < 3) {
+      setValidationError("");
       setCurrentStep(currentStep + 1);
     }
   };
@@ -90,6 +119,13 @@ const PostSkill = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const error = validateStep(1) || validateStep(2);
+    if (error) {
+      setValidationError(error);
+      setCurrentStep(error.includes("level") || error.includes("delivery") || error.includes("availability") ? 2 : 1);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -283,6 +319,12 @@ const PostSkill = () => {
           <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-primary border-2 border-black"></div>
 
           <form className="space-y-10">
+            {validationError && (
+              <div className="border-2 border-red-600 bg-red-100 px-4 py-3 font-bold text-red-700 uppercase tracking-wide">
+                {validationError}
+              </div>
+            )}
+
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
               <div className="space-y-8">
