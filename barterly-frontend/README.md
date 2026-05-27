@@ -11,7 +11,7 @@ For full-stack setup, backend documentation, and architecture details, see the r
 - Tailwind CSS 4
 - React Router 7
 - Axios
-- Socket.io client
+- Socket.io Client
 - ESLint
 
 ## Features
@@ -123,6 +123,7 @@ If requests fail locally, check:
 - Use the existing service files instead of calling Axios directly from new pages.
 - Keep pull requests focused on one issue.
 - Run lint and build before opening a pull request.
+- For contribution guidelines, see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ## Verification
 
