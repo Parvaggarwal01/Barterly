@@ -49,10 +49,6 @@ const Login = () => {
         rememberMe: formData.rememberMe,
       });
 
-      console.log("Login successful:", response);
-      console.log("User data:", response.data.user);
-      console.log("User role:", response.data.user.role);
-      console.log("Is admin?", response.data.user.role === "admin");
 
       // Check if email is verified
       if (!response.data.user.isVerified) {
@@ -60,21 +56,14 @@ const Login = () => {
         navigate("/verify-email", { state: { email: formData.email } });
       } else {
         // Navigate to appropriate dashboard based on role
-        console.log("Checking role for navigation...");
         if (response.data.user.role === "admin") {
-          console.log("Navigating to admin dashboard");
           navigate("/admin/dashboard");
         } else {
-          console.log("Navigating to user dashboard");
           navigate("/dashboard");
         }
       }
     } catch (err) {
       console.error("Login error:", err);
-      console.log("Error structure:", JSON.stringify(err.messgae, null, 2));
-      console.log("err.message:", err?.message);
-      console.log("err.error:", err?.error);
-      console.log("err.errors:", err?.errors);
 
       // Extract accurate error message from backend response
       let errorMessage = "Login failed. Please try again.";
