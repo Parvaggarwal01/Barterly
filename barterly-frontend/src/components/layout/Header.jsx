@@ -33,6 +33,14 @@ const Header = () => {
           >
             Browse Skills
           </Link>
+
+          <Link
+             to="/faq"
+             className="font-bold text-sm uppercase hover:underline decoration-2 underline-offset-4"
+          >
+            FAQ
+          </Link>
+
           {isAuthenticated ? (
             <Link
               to={user?.role === "admin" ? "/admin/dashboard" : "/dashboard"}
@@ -80,6 +88,15 @@ const Header = () => {
           >
             Browse Skills
           </Link>
+
+          <Link
+            to="/faq"
+            className="font-bold text-sm uppercase hover:underline decoration-2 underline-offset-4"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            FAQ
+          </Link>
+          
           {isAuthenticated ? (
             <Link
               to={user?.role === "admin" ? "/admin/dashboard" : "/dashboard"}

@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
+import FAQ from "./pages/FAQ";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import LandingPage from "./pages/LandingPage";
@@ -53,6 +54,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/browse" element={<BrowseSkills />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/skills/:id" element={<SkillDetail />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
