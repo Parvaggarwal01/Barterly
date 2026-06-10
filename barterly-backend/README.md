@@ -75,7 +75,7 @@ Copy `.env.example` to `.env` and update with your credentials:
 
 ```env
 # MongoDB - Get from MongoDB Atlas
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/barterly
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster-name>.mongodb.net/barterly
 
 # Email - Gmail example (use App Password, not regular password)
 SMTP_USER=your_email@gmail.com
