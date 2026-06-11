@@ -36,7 +36,7 @@ export const sendVerificationEmail = async (email, name, otp) => {
   const transporter = createTransporter();
 
   const mailOptions = {
-    from: process.env.FROM_EMAIL || "noreply@barterly.com",
+    from: process.env.EMAIL_FROM || process.env.FROM_EMAIL || "noreply@barterly.com",
     to: email,
     subject: "Verify Your Email - Barterly",
     html: `
@@ -197,7 +197,7 @@ export const sendPasswordResetEmail = async (email, name, otp) => {
   const transporter = createTransporter();
 
   const mailOptions = {
-    from: process.env.FROM_EMAIL || "noreply@barterly.com",
+    from: process.env.EMAIL_FROM || process.env.FROM_EMAIL || "noreply@barterly.com",
     to: email,
     subject: "Password Reset Request - Barterly",
     html: `

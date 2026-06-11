@@ -42,6 +42,9 @@ const Register = () => {
     setPasswordStrength(strength);
   };
 
+  const isValidPassword = (password) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -62,9 +65,11 @@ const Register = () => {
       return;
     }
 
-    // Password strength validation
-    if (passwordStrength < 2) {
-      setError("Password is too weak. Please use a stronger password.");
+    // Match backend password policy before submitting
+    if (!isValidPassword(formData.password)) {
+      setError(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+      );
       return;
     }
 
@@ -84,7 +89,9 @@ const Register = () => {
       navigate("/verify-email", { state: { email: formData.email } });
     } catch (err) {
       console.error("Registration error:", err);
-      setError(err.message || "Registration failed. Please try again.");
+      const apiErrorMessage =
+        err?.errors?.[0]?.message || err?.message || "Registration failed. Please try again.";
+      setError(apiErrorMessage);
     } finally {
       setIsLoading(false);
     }
