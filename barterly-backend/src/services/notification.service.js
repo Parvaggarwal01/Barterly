@@ -1,5 +1,6 @@
 import Notification from "../models/Notification.model.js";
 import { AppError } from "../utils/apiResponse.utils.js";
+import { getIO, getUserSocketId } from "../config/socket.js";
 
 /**
  * Create a new notification
@@ -9,7 +10,18 @@ import { AppError } from "../utils/apiResponse.utils.js";
 export const createNotification = async (notificationData) => {
   try {
     const notification = await Notification.create(notificationData);
-    // TODO: Emit socket event here if needed
+    
+    try {
+      const io = getIO();
+      const recipientSocketId = getUserSocketId(notification.recipient);
+      
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit("new_notification", notification);
+      }
+    } catch (socketError) {
+      console.error("Warning: Could not emit socket event for notification", socketError);
+    }
+    
     return notification;
   } catch (error) {
     console.error("Error creating notification:", error);
