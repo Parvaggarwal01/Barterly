@@ -21,7 +21,8 @@ export const validate = (schema) => {
     } catch (error) {
       // console.log("❌ Validation error caught:", error.message);
       if (error instanceof ZodError) {
-        const errors = error.errors.map((err) => ({
+        const validationErrors = error.issues ?? error.errors ?? [];
+        const errors = validationErrors.map((err) => ({
           field: err.path.join("."),
           message: err.message,
         }));
