@@ -39,6 +39,14 @@ const Footer = () => {
           >
             How it Works
           </Link>
+
+          <Link
+            to="/faq"
+            className="hover:text-primary hover:translate-x-1 transition-transform"
+          >
+           FAQ
+          </Link>
+
           <Link
             to="/pricing"
             className="hover:text-primary hover:translate-x-1 transition-transform"
