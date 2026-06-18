@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import FAQ from "./pages/FAQ";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
@@ -25,6 +26,16 @@ import Categories from "./pages/admin/Categories";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const location = useLocation();
 
@@ -49,6 +60,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollToTop />
       {!isAuthRoute && <Header />}
       <main className="flex-1">
         <Routes>
@@ -168,10 +180,6 @@ function App() {
               </AdminProtectedRoute>
             }
           />
-
-          {/* Placeholder routes for future pages */}
-          {/* User routes will be added here: /my-skills, /requests, /messages, etc. */}
-          {/* Admin routes will be added here: /admin/users, /admin/skills, etc. */}
         </Routes>
       </main>
       {!isAuthRoute && <Footer />}
