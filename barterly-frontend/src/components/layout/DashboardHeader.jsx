@@ -1,9 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
-import userService from "../../services/userService";
 import notificationService from "../../services/notificationService";
 import skillService from "../../services/skillService";
+import userService from "../../services/userService";
 
 const DashboardHeader = ({ onMenuClick }) => {
   const [notifications, setNotifications] = useState([]);
@@ -22,6 +22,37 @@ const DashboardHeader = ({ onMenuClick }) => {
     }
   };
 
+//User Avatar
+const getInitials = (name) => {
+  if (!name) return "?";
+
+  const trimmed = name.trim();
+
+  // Has spaces (Jane Doe, jane doe)
+  const parts = trimmed.split(/\s+/);
+
+  if (parts.length > 1) {
+    return (
+      parts[0][0] +
+      parts[parts.length - 1][0]
+    ).toUpperCase();
+  }
+
+  // CamelCase (JaneDoe)
+  const capitals = trimmed.match(/[A-Z]/g);
+
+  if (capitals && capitals.length >= 2) {
+    return (
+      capitals[0] +
+      capitals[capitals.length - 1]
+    ).toUpperCase();
+  }
+
+  //  Single word (Jane, jane)
+  return trimmed.slice(0, 2).toUpperCase();
+};
+
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -37,7 +68,7 @@ const DashboardHeader = ({ onMenuClick }) => {
         console.error("Failed to fetch user data for header:", error);
       }
     };
-    
+
     if (authService.isAuthenticated()) {
       fetchUserData();
       fetchNotifications();
@@ -116,13 +147,13 @@ const DashboardHeader = ({ onMenuClick }) => {
         {/* Search Bar (Hidden on mobile) */}
         <div className="hidden md:flex relative group z-50">
           <input
-             className="bg-white border-2 border-black px-4 py-2 w-64 text-sm font-bold placeholder-gray-500 focus:outline-none focus:ring-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] placeholder:font-medium"
-             placeholder="SEARCH SKILLS..."
-             type="text"
-             value={searchQuery}
-             onChange={(e) => setSearchQuery(e.target.value)}
-             onFocus={() => { if (searchQuery.trim().length > 0) setIsSearchOpen(true); }}
-             onBlur={() => setTimeout(() => setIsSearchOpen(false), 200)}
+            className="bg-white border-2 border-black px-4 py-2 w-64 text-sm font-bold placeholder-gray-500 focus:outline-none focus:ring-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] placeholder:font-medium"
+            placeholder="SEARCH SKILLS..."
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => { if (searchQuery.trim().length > 0) setIsSearchOpen(true); }}
+            onBlur={() => setTimeout(() => setIsSearchOpen(false), 200)}
           />
           <button className="absolute right-2 top-1/2 -translate-y-1/2 text-black">
             <span className="material-symbols-outlined text-xl">search</span>
@@ -185,7 +216,7 @@ const DashboardHeader = ({ onMenuClick }) => {
                   let icon = "info";
 
                   if (notif.type.includes("accepted") || notif.type.includes("verified") || notif.type.includes("completed")) {
-                    badgeColor = "border-l-[#4ECDC4]"; 
+                    badgeColor = "border-l-[#4ECDC4]";
                     hoverColor = "hover:bg-[#4ECDC4]/20";
                     icon = "check_circle";
                   } else if (notif.type.includes("rejected")) {
@@ -213,7 +244,7 @@ const DashboardHeader = ({ onMenuClick }) => {
                         {/* Title generation based on type could be added but currently sticking to message property mapped tightly to requirements */}
                         <p className="text-xs font-bold leading-tight">{notif.message}</p>
                         <p className="text-[10px] text-gray-500 font-bold mt-1 uppercase">
-                           {new Date(notif.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          {new Date(notif.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>
                       </div>
                     </div>
@@ -222,8 +253,8 @@ const DashboardHeader = ({ onMenuClick }) => {
               )}
             </div>
             <div className="p-2 border-t-2 border-black">
-              <button 
-                onClick={handleMarkAllRead} 
+              <button
+                onClick={handleMarkAllRead}
                 className="w-full text-xs font-bold uppercase underline hover:text-[#e6c300] py-2"
                 disabled={unreadCount === 0}
               >
@@ -242,9 +273,9 @@ const DashboardHeader = ({ onMenuClick }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="material-symbols-outlined text-2xl text-gray-400">
-                person
+            <div className="w-full h-full bg-primary flex items-center justify-center">
+              <span className="font-black text-sm text-black uppercase">
+                {getInitials(user?.name)}
               </span>
             </div>
           )}
