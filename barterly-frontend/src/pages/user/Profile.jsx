@@ -22,7 +22,15 @@ const Profile = () => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [saving, setSaving] = useState(false);
+const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+const timezoneOffset = new Intl.DateTimeFormat("en", {
+  timeZoneName: "longOffset",
+})
+  .formatToParts(new Date())
+  .find((part) => part.type === "timeZoneName")?.value;
+
+const timezone = `${timezoneName} (${timezoneOffset})`;
   // Review Rating Stats
   const [ratingStats, setRatingStats] = useState({
     5: 0, 4: 0, 3: 0, 2: 0, 1: 0, total: 0, average: 0
@@ -243,7 +251,8 @@ const Profile = () => {
                       </span>
                     )}
                     <span className="border-2 border-black bg-transparent px-3 py-1 text-xs font-bold uppercase flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">schedule</span> EST (UTC-5)
+                      <span className="material-symbols-outlined text-sm">schedule</span>
+                      {timezone}
                     </span>
                   </div>
                 </div>
