@@ -4,7 +4,7 @@ import authService from "../../services/authService";
 import notificationService from "../../services/notificationService";
 import skillService from "../../services/skillService";
 import userService from "../../services/userService";
-
+import { getInitials } from "../../utils/getInitials";
 const DashboardHeader = ({ onMenuClick }) => {
   const [notifications, setNotifications] = useState([]);
   const [user, setUser] = useState(() => authService.getUser() || {});
@@ -22,35 +22,6 @@ const DashboardHeader = ({ onMenuClick }) => {
     }
   };
 
-//User Avatar
-const getInitials = (name) => {
-  if (!name) return "?";
-
-  const trimmed = name.trim();
-
-  // Has spaces (Jane Doe, jane doe)
-  const parts = trimmed.split(/\s+/);
-
-  if (parts.length > 1) {
-    return (
-      parts[0][0] +
-      parts[parts.length - 1][0]
-    ).toUpperCase();
-  }
-
-  // CamelCase (JaneDoe)
-  const capitals = trimmed.match(/[A-Z]/g);
-
-  if (capitals && capitals.length >= 2) {
-    return (
-      capitals[0] +
-      capitals[capitals.length - 1]
-    ).toUpperCase();
-  }
-
-  //  Single word (Jane, jane)
-  return trimmed.slice(0, 2).toUpperCase();
-};
 
 
   useEffect(() => {

@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import authService from "../../services/authService";
 import userService from "../../services/userService";
-
+import { getInitials } from "../../utils/getInitials";
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
     fetchUserData();
   }, []);
+
 
   const handleLogout = () => {
     authService.logout();
@@ -85,11 +86,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="material-symbols-outlined text-4xl text-gray-400">
-                  person
-                </span>
-              </div>
+             <div className="w-full h-full bg-primary flex items-center justify-center">
+             <span className="font-black text-2xl text-black uppercase">
+               {getInitials(user?.name)}
+              </span>
+           </div>
             )}
           </div>
           <h3 className="font-bold text-lg leading-tight uppercase">
