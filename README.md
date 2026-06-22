@@ -480,6 +480,7 @@ npm run build
 | `PORT`                  | Server port         | 3000                      |
 | `MONGODB_URI`           | MongoDB connection  | mongodb+srv://...         |
 | `JWT_ACCESS_SECRET`     | JWT secret key      | your_secret_key           |
+| `JWT_REFRESH_SECRET`    | Refresh JWT secret  | your_refresh_secret       |
 | `JWT_ACCESS_EXPIRE`     | Token expiry        | 15m                       |
 | `SMTP_USER`             | Email address       | your@gmail.com            |
 | `FRONTEND_URL`          | Frontend URL        | http://localhost:5173     |
