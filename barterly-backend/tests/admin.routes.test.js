@@ -23,51 +23,49 @@ describe("Admin Routes Integration Test", () => {
     // Wait, testing routes requires mocking DB if we don't spin up a Mongo Memory Server.
     // Let's just create a small mock for User.findById to avoid DB issues.
     const originalFindById = User.findById;
-    
-    User.findById = (id) => ({
-      select: () => Promise.resolve({
-        _id: id,
-        isActive: true,
-        role: "user"
-      })
-    });
+    try {
+      User.findById = (id) => ({
+        select: () => Promise.resolve({
+          _id: id,
+          isActive: true,
+          role: "user"
+        })
+      });
 
-    const token = generateAccessToken({ _id: "dummy-id" });
+      const token = generateAccessToken({ userId: "dummy-id" });
 
-    const response = await request(app)
-      .get("/api/admin/stats")
-      .set("Authorization", `Bearer ${token}`);
+      const response = await request(app)
+        .get("/api/admin/stats")
+        .set("Authorization", `Bearer ${token}`);
 
-    assert.equal(response.status, 403);
-    assert.equal(response.body.message, "You do not have permission to perform this action");
-
-    User.findById = originalFindById;
+      assert.equal(response.status, 403);
+      assert.equal(response.body.message, "You do not have permission to perform this action");
+    } finally {
+      User.findById = originalFindById;
+    }
   });
 
   test("should allow access to user with admin role", async () => {
     const originalFindById = User.findById;
-    
-    User.findById = (id) => ({
-      select: () => Promise.resolve({
-        _id: id,
-        isActive: true,
-        role: "admin"
-      })
-    });
+    try {
+      User.findById = (id) => ({
+        select: () => Promise.resolve({
+          _id: id,
+          isActive: true,
+          role: "admin"
+        })
+      });
 
-    const token = generateAccessToken({ _id: "admin-id" });
+      const token = generateAccessToken({ userId: "admin-id" });
 
-    // Assuming we mock controller to return 200, but wait, the controller is real.
-    // If the controller hits DB, it might fail. Let's just expect it not to be 401 or 403.
-    const response = await request(app)
-      .get("/api/admin/stats")
-      .set("Authorization", `Bearer ${token}`);
+      const response = await request(app)
+        .get("/api/admin/stats")
+        .set("Authorization", `Bearer ${token}`);
 
-    // Assuming controller returns 500 without DB, or 200 if no DB dependency. 
-    // We just verify it bypasses auth (not 401/403).
-    assert.notEqual(response.status, 401);
-    assert.notEqual(response.status, 403);
-
-    User.findById = originalFindById;
+      assert.notEqual(response.status, 401);
+      assert.notEqual(response.status, 403);
+    } finally {
+      User.findById = originalFindById;
+    }
   });
 });

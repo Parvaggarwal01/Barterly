@@ -14,13 +14,13 @@ export const AuthProvider = ({ children }) => {
         if (authService.isAuthenticated()) {
           // Attempt to fetch current user securely from the backend
           const response = await authService.getCurrentUser();
-          if (response?.data?.user) {
-            setUser(response.data.user);
+          if (response?.data?.data?.user) {
+            setUser(response.data.data.user);
             setIsAuthenticated(true);
           } else {
-            // Fallback to local storage if API succeeds but format is weird
-            setUser(authService.getUser());
-            setIsAuthenticated(true);
+            // Unrecognized format, treat as authentication failure
+            setUser(null);
+            setIsAuthenticated(false);
           }
         } else {
           setIsAuthenticated(false);
@@ -39,8 +39,23 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
+  const login = async (credentials) => {
+    const response = await authService.login(credentials);
+    if (response?.data?.user) {
+      setUser(response.data.user);
+    }
+    setIsAuthenticated(true);
+    return response;
+  };
+
+  const logout = async () => {
+    await authService.logout();
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
