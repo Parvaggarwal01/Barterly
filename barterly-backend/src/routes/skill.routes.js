@@ -1,7 +1,6 @@
 import express from "express";
 import * as skillController from "../controllers/skill.controller.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/role.middleware.js";
+import { authenticate, checkRole } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -19,11 +18,11 @@ router.put("/:id", skillController.updateSkill);
 router.delete("/:id", skillController.deleteSkill);
 
 // Admin routes
-router.get("/admin/all", authorize("admin"), skillController.getAllSkillsAdmin);
-router.get("/admin/stats", authorize("admin"), skillController.getSkillStats);
+router.get("/admin/all", checkRole("admin"), skillController.getAllSkillsAdmin);
+router.get("/admin/stats", checkRole("admin"), skillController.getSkillStats);
 router.patch(
   "/:id/verify",
-  authorize("admin"),
+  checkRole("admin"),
   skillController.updateSkillVerification,
 );
 

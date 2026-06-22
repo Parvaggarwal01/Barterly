@@ -3,9 +3,10 @@ import assert from "node:assert/strict";
 import request from "supertest";
 import express from "express";
 import adminRoutes from "../src/routes/admin.routes.js";
-import { generateAccessToken } from "../src/utils/jwt.utils.js";
-import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import User from "../src/models/User.model.js";
+
+process.env.JWT_ACCESS_SECRET = "deterministic_test_secret_for_rbac";
 
 const app = express();
 app.use(express.json());
@@ -32,7 +33,7 @@ describe("Admin Routes Integration Test", () => {
         })
       });
 
-      const token = generateAccessToken({ userId: "dummy-id" });
+      const token = jwt.sign({ userId: "dummy-id" }, process.env.JWT_ACCESS_SECRET);
 
       const response = await request(app)
         .get("/api/admin/stats")
@@ -56,7 +57,7 @@ describe("Admin Routes Integration Test", () => {
         })
       });
 
-      const token = generateAccessToken({ userId: "admin-id" });
+      const token = jwt.sign({ userId: "admin-id" }, process.env.JWT_ACCESS_SECRET);
 
       const response = await request(app)
         .get("/api/admin/stats")

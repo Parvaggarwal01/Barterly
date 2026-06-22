@@ -54,8 +54,17 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
+  const register = async (userData) => {
+    const response = await authService.register(userData);
+    if (response?.data?.user) {
+      setUser(response.data.user);
+    }
+    setIsAuthenticated(true);
+    return response;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
