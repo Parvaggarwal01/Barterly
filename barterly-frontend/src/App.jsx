@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FAQ from "./pages/FAQ";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
@@ -36,6 +36,40 @@ function ScrollToTop() {
   return null;
 }
 
+function ScrollToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      setIsVisible(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+    toggleVisibility();
+
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    isVisible && (
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center border-2 border-black bg-primary text-black shadow-hard transition-all duration-300 hover:-translate-y-1 hover:bg-primary-dark sm:bottom-5 sm:right-5 sm:h-14 sm:w-14"
+      >
+        <span className="material-symbols-outlined text-lg sm:text-2xl">
+          arrow_upward
+        </span>
+      </button>
+    )
+  );
+}
+
 function App() {
   const location = useLocation();
 
@@ -62,6 +96,7 @@ function App() {
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
       {!isAuthRoute && <Header />}
+      <ScrollToTopButton />
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
