@@ -1,13 +1,12 @@
 import express from "express";
 import * as userController from "../controllers/user.controller.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
+import { authenticate, checkRole } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
   updateProfileSchema,
   uploadAvatarSchema,
   getUserByIdSchema,
 } from "../validations/user.validation.js";
-import { authorize } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
@@ -25,14 +24,14 @@ router.get("/me", authenticate, userController.getCurrentUserProfile);
 router.get(
   "/admin/all",
   authenticate,
-  authorize("admin"),
+  checkRole("admin"),
   userController.getAllUsers,
 );
 
 router.patch(
   "/admin/:id/status",
   authenticate,
-  authorize("admin"),
+  checkRole("admin"),
   userController.updateUserStatus,
 );
 

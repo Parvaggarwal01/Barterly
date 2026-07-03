@@ -1,7 +1,6 @@
 import express from "express";
 import * as reportController from "../controllers/report.controller.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/role.middleware.js";
+import { authenticate, checkRole } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { createReportSchema } from "../validations/report.validation.js";
 
@@ -21,7 +20,7 @@ router.post("/", validate(createReportSchema), reportController.submitReport);
  * @desc    Get all reports (Admin)
  * @access  Admin
  */
-router.get("/admin/all", authorize("admin"), reportController.getAllReports);
+router.get("/admin/all", checkRole("admin"), reportController.getAllReports);
 
 /**
  * @route   PATCH /api/reports/admin/:id/status
@@ -30,7 +29,7 @@ router.get("/admin/all", authorize("admin"), reportController.getAllReports);
  */
 router.patch(
   "/admin/:id/status",
-  authorize("admin"),
+  checkRole("admin"),
   reportController.updateReportStatus,
 );
 

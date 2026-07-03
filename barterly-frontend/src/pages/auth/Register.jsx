@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ const Register = () => {
 
     try {
       // Call the API
-      const response = await authService.register({
+      const response = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,

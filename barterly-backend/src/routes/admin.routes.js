@@ -1,12 +1,11 @@
 import express from "express";
 import * as adminController from "../controllers/admin.controller.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/role.middleware.js";
+import { authenticate, checkRole } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 router.use(authenticate);
-router.use(authorize("admin"));
+router.use(checkRole("admin"));
 
 /**
  * @route   GET /api/admin/stats

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,7 +44,7 @@ const Login = () => {
 
     try {
       // Call the API
-      const response = await authService.login({
+      const response = await login({
         email: formData.email,
         password: formData.password,
         rememberMe: formData.rememberMe,

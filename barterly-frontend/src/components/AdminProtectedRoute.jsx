@@ -1,14 +1,13 @@
 import { Navigate } from "react-router-dom";
-import authService from "../services/authService";
+import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "./LoadingSpinner";
 
 const AdminProtectedRoute = ({ children }) => {
-  const isAuthenticated = authService.isAuthenticated();
-  const user = authService.getUser();
+  const { isAuthenticated, user, isLoading } = useAuth();
 
-  console.log("AdminProtectedRoute - isAuthenticated:", isAuthenticated);
-  console.log("AdminProtectedRoute - user:", user);
-  console.log("AdminProtectedRoute - user role:", user?.role);
-  console.log("AdminProtectedRoute - is admin?:", user?.role === "admin");
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -16,11 +15,9 @@ const AdminProtectedRoute = ({ children }) => {
 
   if (user?.role !== "admin") {
     // Redirect non-admin users to user dashboard
-    console.log("Not admin, redirecting to user dashboard");
     return <Navigate to="/dashboard" replace />;
   }
 
-  console.log("Admin verified, rendering admin dashboard");
   return children;
 };
 
