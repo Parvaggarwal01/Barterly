@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node -r dotenv/config server.js",
     "dev": "node -r dotenv/config --watch server.js",
-    "test": "node --test",
+    "test": "node --test tests/**/*.test.js",
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:categories": "node scripts/seedCategories.js"
   },
