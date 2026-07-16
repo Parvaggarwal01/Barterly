@@ -1,5 +1,3 @@
-import assert from "node:assert/strict";
-import test from "node:test";
 import {
   loginSchema,
   registerSchema,
@@ -7,70 +5,66 @@ import {
   verifyEmailSchema,
 } from "../src/validations/auth.validation.js";
 
-test("registerSchema accepts valid registration data and lowercases email", () => {
-  const result = registerSchema.parse({
-    body: {
-      name: "Ada Lovelace",
-      email: "ADA@example.COM",
-      password: "StrongPass1!",
-    },
+describe("Auth Validation Schemas", () => {
+  test("registerSchema accepts valid registration data and lowercases email", () => {
+    const result = registerSchema.parse({
+      body: {
+        name: "Ada Lovelace",
+        email: "ADA@example.COM",
+        password: "StrongPass1!",
+      },
+    });
+
+    expect(result.body.email).toBe("ada@example.com");
+    expect(result.body.name).toBe("Ada Lovelace");
   });
 
-  assert.equal(result.body.email, "ada@example.com");
-  assert.equal(result.body.name, "Ada Lovelace");
-});
-
-test("registerSchema rejects weak passwords", () => {
-  assert.throws(
-    () =>
+  test("registerSchema rejects weak passwords", () => {
+    expect(() =>
       registerSchema.parse({
         body: {
           name: "Ada Lovelace",
           email: "ada@example.com",
           password: "password",
         },
-      }),
-    /Password must contain at least one uppercase letter/,
-  );
-});
-
-test("loginSchema accepts optional rememberMe", () => {
-  const result = loginSchema.parse({
-    body: {
-      email: "user@example.com",
-      password: "secret",
-      rememberMe: true,
-    },
+      })
+    ).toThrow(/Password must contain at least one uppercase letter/);
   });
 
-  assert.equal(result.body.rememberMe, true);
-});
-
-test("verifyEmailSchema requires a six digit OTP", () => {
-  assert.doesNotThrow(() =>
-    verifyEmailSchema.parse({
+  test("loginSchema accepts optional rememberMe", () => {
+    const result = loginSchema.parse({
       body: {
         email: "user@example.com",
-        otp: "123456",
+        password: "secret",
+        rememberMe: true,
       },
-    }),
-  );
+    });
 
-  assert.throws(
-    () =>
+    expect(result.body.rememberMe).toBe(true);
+  });
+
+  test("verifyEmailSchema requires a six digit OTP", () => {
+    expect(() =>
+      verifyEmailSchema.parse({
+        body: {
+          email: "user@example.com",
+          otp: "123456",
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
       verifyEmailSchema.parse({
         body: {
           email: "user@example.com",
           otp: "12345a",
         },
-      }),
-    /OTP must contain only numbers/,
-  );
-});
+      })
+    ).toThrow(/OTP must contain only numbers/);
+  });
 
-test("resetPasswordSchema rejects mismatched passwords", () => {
-  assert.throws(
-    () =>
+  test("resetPasswordSchema rejects mismatched passwords", () => {
+    expect(() =>
       resetPasswordSchema.parse({
         body: {
           email: "user@example.com",
@@ -78,7 +72,7 @@ test("resetPasswordSchema rejects mismatched passwords", () => {
           password: "StrongPass1!",
           confirmPassword: "DifferentPass1!",
         },
-      }),
-    /Passwords do not match/,
-  );
+      })
+    ).toThrow(/Passwords do not match/);
+  });
 });
