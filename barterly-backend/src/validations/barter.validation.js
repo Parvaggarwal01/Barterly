@@ -71,8 +71,18 @@ export const getBartersQuerySchema = z.object({
       ])
       .optional(),
     type: z.enum(["sent", "received", "all"]).optional().default("all"),
-    page: z.coerce.number().int().positive().optional().default(1),
-    limit: z.coerce.number().int().positive().optional().default(10),
+    page: z.coerce
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .default(1),
+    limit: z.coerce
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .default(10),
     sortBy: z
       .enum(["createdAt", "updatedAt", "status"])
       .optional()
