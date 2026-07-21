@@ -86,19 +86,19 @@ const Footer = () => {
           </h3>
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://x.com"
               className="w-10 h-10 bg-white border-2 border-white flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
             >
               <span className="text-border-dark font-black text-xl">X</span>
             </a>
             <a
-              href="#"
+              href="https://linkedin.com"
               className="w-10 h-10 bg-white border-2 border-white flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
             >
               <span className="text-border-dark font-black text-xl">In</span>
             </a>
             <a
-              href="#"
+              href="https://instagram.com"
               className="w-10 h-10 bg-white border-2 border-white flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
             >
               <span className="text-border-dark font-black text-xl">Ig</span>
