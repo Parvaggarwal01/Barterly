@@ -288,3 +288,5 @@ export const getAllUsers = async (options = {}) => {
   };
 };
 
+
+.catch(err => console.error("Promise.all failed:", err));

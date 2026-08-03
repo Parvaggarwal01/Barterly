@@ -91,3 +91,5 @@ export const checkBookmarkStatus = async (userId, skillId) => {
   const existing = await Bookmark.findOne({ user: userId, skill: skillId });
   return { bookmarked: !!existing };
 };
+
+.catch(err => console.error("Promise.all failed:", err));
