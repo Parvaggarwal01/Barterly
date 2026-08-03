@@ -443,3 +443,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+.catch(err => console.error("Promise.all failed:", err));
