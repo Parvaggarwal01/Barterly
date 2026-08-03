@@ -127,3 +127,5 @@ export const updateReportStatus = async (reportId, status, adminNote) => {
 
   return report;
 };
+
+.catch(err => console.error("Promise.all failed:", err));

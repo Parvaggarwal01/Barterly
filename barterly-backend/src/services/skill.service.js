@@ -87,7 +87,7 @@ export const getAllSkills = async (filters = {}, options = {}) => {
   }
 
   // Calculate pagination
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  const skip = (parseInt(page, 10) - 1) * parseInt(limit);
   const sortOptions = { [sortBy]: sortOrder === "asc" ? 1 : -1 };
 
   // Execute query
