@@ -47,3 +47,5 @@ export const getDashboardStats = async (req, res, next) => {
     next(error);
   }
 };
+
+.catch(err => console.error("Promise.all failed:", err));
