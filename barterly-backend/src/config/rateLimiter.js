@@ -3,15 +3,24 @@ import RedisStore from "rate-limit-redis";
 import redis from "./redis.js";
 import { rateLimitKeyGenerator } from "../utils/ip.utils.js";
 
-const makeStore = (prefix) =>
-  new RedisStore({
-    sendCommand: (command, ...args) => redis.call(command, ...args),
-    prefix,
-  });
+const createStore = (prefix) => {
+  try {
+    if (redis.status === "ready") {
+      return new RedisStore({
+        sendCommand: (command, ...args) => redis.call(command, ...args),
+        prefix,
+      });
+    }
+  } catch (err) {
+    console.warn(`Redis store unavailable for ${prefix}, using in-memory fallback:`, err.message);
+  }
+  return undefined;
+};
+
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
-  store: makeStore("rl:auth"),
+  store: createStore("rl:auth"),
   keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
@@ -24,7 +33,7 @@ export const authLimiter = rateLimit({
 export const otpLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
-  store: makeStore("rl:otp"),
+  store: createStore("rl:otp"),
   keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
@@ -37,7 +46,7 @@ export const otpLimiter = rateLimit({
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
-  store: makeStore("rl:api"),
+  store: createStore("rl:api"),
   keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
@@ -50,7 +59,7 @@ export const apiLimiter = rateLimit({
 export const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 50,
-  store: makeStore("rl:upload"),
+  store: createStore("rl:upload"),
   keyGenerator: rateLimitKeyGenerator,
   standardHeaders: true,
   legacyHeaders: false,
